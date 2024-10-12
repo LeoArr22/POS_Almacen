@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, Date
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base
+from sqlalchemy.exc import NoResultFound
 
 # Crear la conexión con la base de datos
 engine = create_engine('mysql+mysqlconnector://root:root@localhost/db_almacen')
@@ -20,7 +21,7 @@ class Producto(Base):
     
     # Relaciones
     detalle = relationship("Detalle", back_populates="producto")
-    categoria = relationship("Categoria", back_populates="productos")  # Cambiar "productos" a plural en Categoria
+    categoria = relationship("Categoria", back_populates="productos")  
 
 class Categoria(Base):
     __tablename__ = "Categoria"
@@ -28,7 +29,7 @@ class Categoria(Base):
     nombre = Column(String)
     
     # Relación con Producto
-    productos = relationship("Producto", back_populates="categoria")  # Cambiar a "productos"
+    productos = relationship("Producto", back_populates="categoria")  
 
 class Detalle(Base):
     __tablename__ = 'Detalle'
@@ -39,7 +40,7 @@ class Detalle(Base):
     
     # Relaciones
     producto = relationship("Producto", back_populates="detalle")
-    venta = relationship("Venta", back_populates="detalles")  # Cambiar a "detalles" para coincidir con Venta
+    venta = relationship("Venta", back_populates="detalles") 
 
 class Venta(Base):
     __tablename__ = 'Venta'
@@ -49,21 +50,10 @@ class Venta(Base):
     vendedorID = Column(Integer, ForeignKey('Vendedor.vendedorID'))
     
     # Relación con Detalle
-    detalles = relationship("Detalle", back_populates="venta")  # Cambiar a "detalles"
+    detalles = relationship("Detalle", back_populates="venta")  
 
 class Vendedor(Base):
     __tablename__ = "Vendedor"
     vendedorID = Column(Integer, primary_key=True, autoincrement=True)
     usuario = Column(String)
-    contraseña = Column(String)
-
-
-
-session = Session()
-nuevo_producto = Categoria(nombre="Bebidas")
-session.add(nuevo_producto)
-session.commit()
-session.close()
-
-    
-    
+    contrasena = Column(Integer)
