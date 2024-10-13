@@ -1,10 +1,13 @@
 from engine import *
+from validadores import valida_usuario
 
+#Nuestra clase CRUD recibe como parametro en su constructor la session
 class CRUD_usuario:
     def __init__(self, Session):
         self.session = Session
 
     # Crear usuario
+    @valida_usuario
     def crear_usuario(self, usuario, contrasena):
         if self.obtener_usuario(usuario) is None:
             nuevo_usuario = Vendedor(usuario=usuario, contrasena=contrasena)
@@ -51,10 +54,12 @@ class CRUD_usuario:
 
 #CON ESTO CREAMOS UNA SESION. 
 #Session() es una "fabrica de sesiones", aqui nos esta creando una sesion llamada session
-session = Session()
-# Instanciamos un objeto crud_usuario, perteneciente a la clase CRUD_usuario y le pasamos la sesion que creamos antes
-crud_usuario = CRUD_usuario(session)
-# Llamamos al metodo que queremos utilizar
-crud_usuario.crear_usuario("Victor", 1234)
+#session=Session()
+#De todas formas vamos a usar with para que cierre sesion automaticamente una vez termine de aplicar la funcionalidad
+with Session() as session:
+    # Instanciamos un objeto crud_usuario, perteneciente a la clase CRUD_usuario y le pasamos la sesion que creamos antes
+    crud_usuario = CRUD_usuario(session)
+    # Llamamos al metodo que queremos utilizar
+    crud_usuario.crear_usuario("Victor", "1234")
 
 #INVESTIGAR Y AGREGAR HASING A LAS CONTRASEÑAS
