@@ -2,10 +2,10 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base
 from sqlalchemy.exc import NoResultFound
 
-# Crear la conexión con la base de datos
+#Crear la conexión con la base de datos
 engine = create_engine('mysql+mysqlconnector://root:root@localhost/db_almacen')
 
-# Declaración de la base
+#Declaración de la base y fabrica de sesiones
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 

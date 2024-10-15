@@ -17,7 +17,7 @@ class CRUD_usuario:
         else:
             print("Ese nombre de usuario ya esta en uso")
 
-    # Leer usuario (buscar por nombre)
+    # Leer usuario (buscar por nombre) En caso de no encontrarlo devuelve None
     def obtener_usuario(self, usuario):
         try:
             usuario = self.session.query(Vendedor).filter_by(usuario=usuario).one()
@@ -25,7 +25,8 @@ class CRUD_usuario:
         except NoResultFound:
             return None
 
-    # Actualizar contraseña del usuario
+    # Actualizar contraseña del usuario. Primero busca el usuario con el metodo obtener_usuario, 
+    # si este es igual a None, no realiza ningun cambio y devuelve None 
     def actualizar_contrasena(self, usuario, nueva_contrasena):
         usuario = self.obtener_usuario(usuario)
         if usuario is not None:
