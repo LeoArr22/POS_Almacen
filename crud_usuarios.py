@@ -2,7 +2,7 @@ from engine import *
 from validadores import valida_usuario
 
 #Nuestra clase CRUD recibe como parametro en su constructor la session
-class CRUD_usuario:
+class CRUD_usuario():
     def __init__(self, Session):
         self.session = Session
 

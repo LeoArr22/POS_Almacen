@@ -14,3 +14,4 @@ def valida_usuario(func):
         
         return func(self, usuario, contrasena)
     return wrapper
+
