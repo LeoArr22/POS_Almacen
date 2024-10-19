@@ -1,6 +1,12 @@
+import sys
+import os
+
+# Agrega la ruta raíz del proyecto al sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 import customtkinter as ctk
 from tkinter.font import BOLD
-from util.generic import centrar_ventana, leer_imagen
+from GUI.util.generic import centrar_ventana, leer_imagen
 
 class LoginApp:
     def __init__(self):
@@ -23,13 +29,13 @@ class LoginApp:
         label_logo.pack(expand=True)  # Usar pack para expandir el label dentro del frame
 
         # Frame para el formulario de login
-        frame_login = ctk.CTkFrame(self.ventana, fg_color='#2C3E50', width=500)
-        frame_login.pack(side="right", expand=ctk.YES, fill=ctk.BOTH)
+        frame_login = ctk.CTkFrame(self.ventana, fg_color='#2C3E50', width=500, corner_radius=30)
+        frame_login.pack(side="right", expand=ctk.YES, fill=ctk.BOTH, padx=10, pady=10)
         frame_login.pack_propagate(False)
 
         # Divisor entre el logo y el formulario
-        divisor = ctk.CTkFrame(self.ventana, width=18, fg_color="#ECF0F1")
-        divisor.pack(side="right", fill=ctk.Y)
+        divisor = ctk.CTkFrame(self.ventana, width=18, fg_color="#BDC3C7")
+        divisor.pack(side="right", fill=ctk.Y, padx=20)
 
         # Etiqueta de bienvenida
         etiqueta_bienvenida = ctk.CTkLabel(frame_login, text="Bienvenid@", font=('Helvetica', 60, BOLD), text_color="#ECF0F1")
@@ -44,7 +50,7 @@ class LoginApp:
 
         # Campo de entrada para el usuario
         self.usuario = ctk.CTkEntry(frame_login, font=('Helvetica', 16), textvariable=self.usuario_var, fg_color='#ECF0F1', text_color="#34495E", border_width=2)
-        self.usuario.grid(row=2, column=0, pady=(0, 30), padx=20, sticky='ew')  # Rellena horizontalmente
+        self.usuario.grid(row=2, column=0, pady=(0, 30), padx=40,sticky='nsew')  # Rellena horizontalmente
 
         # Etiqueta de contraseña
         etiqueta_password = ctk.CTkLabel(frame_login, text="Contraseña", font=('Helvetica', 20, BOLD), text_color="#ECF0F1")
@@ -55,7 +61,7 @@ class LoginApp:
 
         # Campo de entrada para la contraseña
         self.password = ctk.CTkEntry(frame_login, font=('Helvetica', 16), textvariable=self.password_var, show="*", fg_color='#ECF0F1', text_color="#34495E", border_width=2)
-        self.password.grid(row=4, column=0, pady=(0, 10), padx=20, sticky='ew')  # Rellena horizontalmente
+        self.password.grid(row=4, column=0, pady=(0, 10), padx=40, sticky='nsew')  # Rellena horizontalmente
 
         # Botón de login
         btn_login = ctk.CTkButton(frame_login, text="Iniciar Sesión", font=('Helvetica', 16, BOLD), fg_color='#E74C3C', text_color='white')
