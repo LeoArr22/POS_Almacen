@@ -5,8 +5,12 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import customtkinter as ctk
+from master.master import *
 from tkinter.font import BOLD
 from GUI.util.generic import centrar_ventana, leer_imagen
+from crud_usuarios import CRUD_usuario
+from engine import *
+
 
 class LoginApp:
     def __init__(self):
@@ -34,8 +38,8 @@ class LoginApp:
         frame_login.pack_propagate(False)
 
         # Divisor entre el logo y el formulario
-        divisor = ctk.CTkFrame(self.ventana, width=18, fg_color="#BDC3C7")
-        divisor.pack(side="right", fill=ctk.Y, padx=20)
+        divisor = ctk.CTkFrame(self.ventana, fg_color='#2C3E50', width=10)
+        divisor.pack(side="right", fill=ctk.Y, padx=20, pady=30)
 
         # Etiqueta de bienvenida
         etiqueta_bienvenida = ctk.CTkLabel(frame_login, text="Bienvenid@", font=('Helvetica', 60, BOLD), text_color="#ECF0F1")
@@ -64,7 +68,7 @@ class LoginApp:
         self.password.grid(row=4, column=0, pady=(0, 10), padx=40, sticky='nsew')  # Rellena horizontalmente
 
         # Botón de login
-        btn_login = ctk.CTkButton(frame_login, text="Iniciar Sesión", font=('Helvetica', 16, BOLD), fg_color='#E74C3C', text_color='white')
+        btn_login = ctk.CTkButton(frame_login, text="Iniciar Sesión", font=('Helvetica', 16, BOLD), fg_color='#E74C3C', text_color='white', command=self.logear)
         btn_login.grid(row=5, column=0, pady=(30, 20), ipadx=10, ipady=10)  # Ajusta el margen vertical
 
         # Ajuste de columnas para que se expandan
@@ -72,6 +76,21 @@ class LoginApp:
 
         # Ejecutar la ventana
         self.ventana.mainloop()
+        
+    def logear(self):
+        usuario = self.usuario_var.get()
+        contrasena = int(self.password_var.get())
+        
+        with Session() as session:
+            crud_usuario=CRUD_usuario(session)
+            bandera=crud_usuario.verificar_contrasena(usuario, contrasena)
+            
+            if bandera is True:
+                print("LOGEADO")
+            else:
+                etiqueta_error_login = ctk.CTkLabel(self.frame_login, text="ERROR", font=('Helvetica', 20, BOLD), text_color="#ECF0F1")
+                etiqueta_error_login.grid(row=6, column=0, pady=(0, 5), sticky='nsew')  # Ajuste de posición
+                
 
 
 # Inicializar la aplicación

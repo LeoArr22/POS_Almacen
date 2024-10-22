@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter.font import BOLD
-from generic import centrar_ventana
+from util.generic import centrar_ventana
 
 
 class MasterPanel:

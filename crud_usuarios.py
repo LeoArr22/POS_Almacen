@@ -44,12 +44,15 @@ class CRUD_usuario():
             return True
         return False
 
-    # Verificar contraseña
     def verificar_contrasena(self, usuario, contrasena):
-        usuario = self.obtener_usuario(usuario)
-        if usuario is not None:
-            return usuario.contrasena == contrasena
+        usuario_obj = self.obtener_usuario(usuario)
+        if usuario_obj is not None:
+            # print(f"Contraseña en BD: {usuario_obj.contrasena}, Contraseña ingresada: {contrasena}")
+            # print(f"Tipo en BD: {type(usuario_obj.contrasena)}, Tipo ingresado: {type(contrasena)}")
+            if (usuario_obj.contrasena == contrasena):
+                return True
         return False
+
 
 
 
@@ -57,10 +60,9 @@ class CRUD_usuario():
 #Session() es una "fabrica de sesiones", aqui nos esta creando una sesion llamada session
 #session=Session()
 #De todas formas vamos a usar with para que cierre sesion automaticamente una vez termine de aplicar la funcionalidad
-with Session() as session:
-    # Instanciamos un objeto crud_usuario, perteneciente a la clase CRUD_usuario y le pasamos la sesion que creamos antes
-    crud_usuario = CRUD_usuario(session)
-    # Llamamos al metodo que queremos utilizar
-    crud_usuario.crear_usuario("Helena", "1234")
-
-#INVESTIGAR Y AGREGAR HASING A LAS CONTRASEÑAS
+# with Session() as session:
+#     # Instanciamos un objeto crud_usuario, perteneciente a la clase CRUD_usuario y le pasamos la sesion que creamos antes
+#     crud_usuario = CRUD_usuario(session)
+#     # Llamamos al metodo que queremos utilizar
+#     user=(crud_usuario.crear_usuario("Angie", "1234"))
+# # INVESTIGAR Y AGREGAR HASING A LAS CONTRASEÑAS
