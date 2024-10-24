@@ -87,7 +87,7 @@ class LoginApp:
             if crud_usuario.verificar_contrasena(usuario, contrasena):
                 print("LOGEADO")
             else:
-                etiqueta_error_login = ctk.CTkLabel(self.frame_login, text="ERROR", font=('Helvetica', 20, BOLD), text_color="#ECF0F1")
+                etiqueta_error_login = ctk.CTkLabel(self.frame_login, text="Credenciales Incorrectas", font=('Helvetica', 20, BOLD), text_color="#ECF0F1")
                 etiqueta_error_login.grid(row=6, column=0, pady=(0, 5), sticky='nsew')  # Ajuste de posición
                 
 

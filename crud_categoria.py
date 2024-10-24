@@ -17,7 +17,7 @@ class CRUD_categoria():
 
     def obtener_categoria(self, nombre):
         try:
-            categoria = self.session.query(Categoria).filter_by(nombre=nombre).one()
+            categoria = self.session.query(Categoria).filter_by(nombre=nombre).first()
             return categoria
         except NoResultFound:
             return None
@@ -37,3 +37,7 @@ class CRUD_categoria():
             self.session.commit()
             return True
         return False
+
+with Session() as session:
+    crud_categoria=CRUD_categoria(session)
+    crud_categoria.crear_categoria("Almacen")

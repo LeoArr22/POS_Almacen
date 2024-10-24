@@ -64,5 +64,5 @@ class CRUD_usuario():
 #     # Instanciamos un objeto crud_usuario, perteneciente a la clase CRUD_usuario y le pasamos la sesion que creamos antes
 #     crud_usuario = CRUD_usuario(session)
 #     # Llamamos al metodo que queremos utilizar
-#     user=(crud_usuario.crear_usuario("Angie", "1234"))
+#     crud_usuario.crear_usuario("Angie", "1234")
 # # INVESTIGAR Y AGREGAR HASING A LAS CONTRASEÑAS
