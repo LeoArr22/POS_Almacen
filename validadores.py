@@ -35,3 +35,15 @@ def valida_producto(func):
         return func(self, *args, **kwargs)
     return wrapper
 
+    
+def valida_categoria(func):
+    def wrapper(self, *args, **kwargs):
+        nombre = args[0]
+        if len(nombre) == 0:
+            raise ValueError("El nombre de la categoría no puede estar vacío")
+        if len(nombre) > 30:
+            raise ValueError("El nombre de la categoría no puede ser mayor a 30 caracteres")
+        
+        return func(self, *args, **kwargs)
+    return wrapper
+

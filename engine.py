@@ -26,7 +26,7 @@ class Producto(Base):
 class Categoria(Base):
     __tablename__ = "Categoria"
     categoriaID = Column(Integer, primary_key=True, autoincrement=True)
-    nombre = Column(String)
+    nombre = Column(String(30))
     
     # Relación con Producto
     productos = relationship("Producto", back_populates="categoria")  
