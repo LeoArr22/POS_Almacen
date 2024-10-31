@@ -40,7 +40,7 @@ class Detalle(Base):
     
     # Relaciones
     producto = relationship("Producto", back_populates="detalle")
-    venta = relationship("Venta", back_populates="detalles") 
+    venta = relationship("Venta", back_populates="detalle") 
 
 class Venta(Base):
     __tablename__ = 'Venta'

@@ -40,4 +40,4 @@ class CRUD_categoria():
 
 with Session() as session:
     crud_categoria=CRUD_categoria(session)
-    crud_categoria.crear_categoria("Almacen")
+    crud_categoria.crear_categoria("Almacennnn")
