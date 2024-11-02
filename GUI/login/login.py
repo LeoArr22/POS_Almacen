@@ -41,7 +41,7 @@ class LoginApp:
         etiqueta_bienvenida.place(relx=0.57, rely=0.1)  # Ajuste de posición
 
         # Etiqueta de usuario
-        etiqueta_usuario = ctk.CTkLabel(self.frame_fondo, text="usuario", text_color="#F3920F",
+        etiqueta_usuario = ctk.CTkLabel(self.frame_fondo, text="Usuario", text_color="#F3920F",
                                          fg_color="#1C2124", bg_color="#1C2124", font=('Helvetica', 20))
         etiqueta_usuario.place(relx=0.71, rely=0.3)  # Ajuste de posición
 
@@ -55,7 +55,7 @@ class LoginApp:
         self.usuario.place(relx=0.55, rely=0.355)
         
         # Etiqueta de contraseña
-        etiqueta_contrasena = ctk.CTkLabel(self.frame_fondo, text="contraseña", text_color="#F3920F",
+        etiqueta_contrasena = ctk.CTkLabel(self.frame_fondo, text="Contraseña", text_color="#F3920F",
                                          fg_color="#1C2124", bg_color="#1C2124", font=('Helvetica', 20))
         etiqueta_contrasena.place(relx=0.69, rely=0.455)  # Ajuste de posición
 

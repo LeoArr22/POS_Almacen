@@ -50,7 +50,7 @@ class Venta(Base):
     vendedorID = Column(Integer, ForeignKey('Vendedor.vendedorID'))
     
     # Relación con Detalle
-    detalles = relationship("Detalle", back_populates="venta")  
+    detalle = relationship("Detalle", back_populates="venta")  
 
 class Vendedor(Base):
     __tablename__ = "Vendedor"
