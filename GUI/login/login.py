@@ -26,6 +26,7 @@ class LoginApp:
         self.ventana.title('Login')
         centrar_ventana(self.ventana, 700, 500)
         self.ventana.resizable(width=0, height=0)
+        self.etiqueta_error_login = None
         
         self.frame_fondo = ctk.CTkFrame(self.ventana, width=700, height=500)
         self.frame_fondo.place(x=0, y=0, relwidth=1, relheight=1)
@@ -79,7 +80,10 @@ class LoginApp:
         
     def logear(self):
         usuario = self.var_usuario.get()
-        contrasena = int(self.var_contrasena.get())
+        contrasena = (self.var_contrasena.get())
+        
+        if self.etiqueta_error_login:
+            self.etiqueta_error_login.place_forget()
         
         with Session() as session:
             crud_usuario=CRUD_usuario(session)
@@ -87,9 +91,9 @@ class LoginApp:
             if crud_usuario.verificar_contrasena(usuario, contrasena):
                 print("LOGEADO")
             else:
-                etiqueta_error_login = ctk.CTkLabel(self.frame_fondo, text="Credenciales Incorrectas", font=('Helvetica', 20, BOLD),
+                self.etiqueta_error_login = ctk.CTkLabel(self.frame_fondo, text="Credenciales Incorrectas", font=('Helvetica', 20, BOLD),
                                                     text_color="#D40000", bg_color="#1C2124", fg_color="#1C2124")
-                etiqueta_error_login.place(relx=0.59, rely=0.8)
+                self.etiqueta_error_login.place(relx=0.59, rely=0.8)
                 
 
 
