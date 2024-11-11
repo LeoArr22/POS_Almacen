@@ -46,4 +46,27 @@ def valida_categoria(func):
         
         return func(self, *args, **kwargs)
     return wrapper
+#validar todo en columna detalle
+def validar_cantidad(cantidad):
+    """Valida que la cantidad sea un entero positivo."""
+    if isinstance(cantidad, int) and cantidad > 0:
+        return True
+    else:
+        print("Cantidad inválida: debe ser un entero positivo.")
+        return False
 
+def validar_total_prod(total_prod):
+    """Valida que el total del producto sea un número decimal positivo."""
+    if isinstance(total_prod, (int, float)) and total_prod >= 0:
+        return True
+    else:
+        print("Total del producto inválido: debe ser un número positivo.")
+        return False
+
+def validar_ids(producto_id, venta_id):
+    """Valida que los IDs sean enteros positivos."""
+    if isinstance(producto_id, int) and producto_id > 0 and isinstance(venta_id, int) and venta_id > 0:
+        return True
+    else:
+        print("IDs inválidos: deben ser enteros positivos.")
+        return False
