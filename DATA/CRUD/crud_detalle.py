@@ -1,65 +1,62 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, Float, ForeignKey
-from engine import get_session
-import validadores
+from DATA.SQL.engine import Detalle 
+from UTIL.validadores import validar_cantidad, validar_total_prod, validar_ids
 
-Base = declarative_base()
+class CRUD_detalle():
+    def __init__(self, Session):
+        self.session = Session
 
-class Detalle(Base):
-    __tablename__ = 'detalle'
-    Producto_productoID = Column(Integer, ForeignKey('producto.productoID'), primary_key=True)
-    Venta_ventaID = Column(Integer, ForeignKey('venta.ventaID'), primary_key=True)
-    cantidad = Column(Integer, nullable=False)
-    total_prod = Column(Float, nullable=False)
-
-def crear_detalle(producto_id, venta_id, cantidad, total_prod):
-    if validadores.validar_ids(producto_id, venta_id) and validadores.validar_cantidad(cantidad) and validadores.validar_total_prod(total_prod):
-        session = get_session()
-        nuevo_detalle = Detalle(
-            Producto_productoID=producto_id,
-            Venta_ventaID=venta_id,
-            cantidad=cantidad,
-            total_prod=total_prod
-        )
-        session.add(nuevo_detalle)
-        session.commit()
-        session.close()
-        print("Detalle creado exitosamente.")
-
-def leer_detalles():
-    session = get_session()
-    detalles = session.query(Detalle).all()
-    for detalle in detalles:
-        print(f"Producto ID: {detalle.Producto_productoID}, Venta ID: {detalle.Venta_ventaID}, "
-              f"Cantidad: {detalle.cantidad}, Total Producto: {detalle.total_prod}")
-    session.close()
-def actualizar_detalle(producto_id, venta_id, nueva_cantidad, nuevo_total_prod):
-    if validadores.validar_ids(producto_id, venta_id) and validadores.validar_cantidad(nueva_cantidad) and validadores.validar_total_prod(nuevo_total_prod):
-        session = get_session()
-        detalle = session.query(Detalle).filter_by(
-            Producto_productoID=producto_id,
-            Venta_ventaID=venta_id
-        ).first()
-        if detalle:
-            detalle.cantidad = nueva_cantidad
-            detalle.total_prod = nuevo_total_prod
-            session.commit()
-            print("Detalle actualizado exitosamente.")
+    def crear_detalle(self, producto_id, venta_id, cantidad, total_prod):
+        if validar_ids(producto_id, venta_id) and validar_cantidad(cantidad) and validar_total_prod(total_prod):
+            if self.obtener_detalle(producto_id, venta_id) is None:
+                nuevo_detalle = Detalle( 
+                    productoID=producto_id,
+                    ventaID=venta_id,
+                    cantidad=cantidad,
+                    total_prod=total_prod
+                )
+                self.session.add(nuevo_detalle)
+                self.session.commit()
+                return nuevo_detalle
+            else:
+                print("El detalle ya existe para este producto y venta.")
         else:
-            print("Detalle no encontrado.")
-        session.close()
+            print("Error en los datos ingresados para el detalle.")
+        return None
 
-def eliminar_detalle(producto_id, venta_id):
-    if validadores.validar_ids(producto_id, venta_id):
-        session = get_session()
-        detalle = session.query(Detalle).filter_by(
-            Producto_productoID=producto_id,
-            Venta_ventaID=venta_id
-        ).first()
-        if detalle:
-            session.delete(detalle)
-            session.commit()
-            print("Detalle eliminado exitosamente.")
+    def obtener_detalle(self, producto_id, venta_id):
+        try:
+            detalle = self.session.query(Detalle).filter_by( 
+                productoID=producto_id,
+                ventaID=venta_id
+            ).one()
+            return detalle
+        except NoResultFound:
+            return None
+
+    def actualizar_detalle(self, producto_id, venta_id, nueva_cantidad, nuevo_total_prod):
+        if validar_ids(producto_id, venta_id) and validar_cantidad(nueva_cantidad) and validar_total_prod(nuevo_total_prod):
+            detalle = self.obtener_detalle(producto_id, venta_id)
+            if detalle:
+                detalle.cantidad = nueva_cantidad
+                detalle.total_prod = nuevo_total_prod
+                self.session.commit()
+                return detalle
+            else:
+                print("El detalle no existe.")
         else:
-            print("Detalle no encontrado.")
-        session.close()
+            print("Error en los datos ingresados para actualizar.")
+        return None
+
+    def eliminar_detalle(self, producto_id, venta_id):
+        if validar_ids(producto_id, venta_id):
+            detalle = self.obtener_detalle(producto_id, venta_id)
+            if detalle:
+                self.session.delete(detalle)
+                self.session.commit()
+                return True
+            else:
+                print("El detalle no existe.")
+        else:
+            print("Error en los IDs ingresados para el detalle.")
+        return False
+#putoelqueleadesputosisoseldirectordelacarrera
