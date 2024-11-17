@@ -59,4 +59,3 @@ class CRUD_detalle():
         else:
             print("Error en los IDs ingresados para el detalle.")
         return False
-#putoelqueleadesputosisoseldirectordelacarrera

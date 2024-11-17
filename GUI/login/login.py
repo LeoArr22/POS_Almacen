@@ -80,7 +80,7 @@ class LoginApp:
         
     def logear(self):
         usuario = self.var_usuario.get()
-        contrasena = (self.var_contrasena.get())
+        contrasena = int(self.var_contrasena.get())
         
         if self.etiqueta_error_login:
             self.etiqueta_error_login.place_forget()
