@@ -1,15 +1,6 @@
-import sys
-import os
-
-# Obtiene el directorio actual del script en ejecución
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Obtiene el directorio raíz de POS_Almacen
-pos_almacen_dir = os.path.abspath(os.path.join(current_dir, "..", ".."))
-
-# Agrega la subcarpeta 'DATA' al path
-data_dir = os.path.join(pos_almacen_dir, "DATA")
-sys.path.append(data_dir)
+from DATA.SQL.engine import *
+from DATA.CRUD.crud_usuarios import CRUD_usuario
+from GUI.util.generic import leer_imagen, centrar_ventana
 
 
 
