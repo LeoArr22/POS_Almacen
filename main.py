@@ -1,3 +1,3 @@
-from GUI.login.login import LoginApp
+from gui.login.login import LoginApp
 
 LoginApp()

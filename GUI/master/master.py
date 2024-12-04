@@ -1,17 +1,3 @@
-import sys
-import os
-
-# Obtiene el directorio actual del script en ejecución
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Obtiene el directorio raíz de POS_Almacen
-pos_almacen_dir = os.path.abspath(os.path.join(current_dir, "..", ".."))
-
-# Agrega la subcarpeta 'DATA' al path
-data_dir = os.path.join(pos_almacen_dir, "GUI")
-sys.path.append(data_dir)
-
-
 import customtkinter as ctk
 from tkinter.font import BOLD
 from util.generic import centrar_ventana

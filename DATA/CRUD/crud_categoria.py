@@ -1,5 +1,5 @@
-from DATA.SQL.engine import *
-from UTIL.validadores import valida_categoria
+from data.sql.engine import *
+from util.validadores import valida_categoria
 
 class CRUD_categoria():
     def __init__(self, Session):

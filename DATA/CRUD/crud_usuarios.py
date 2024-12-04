@@ -1,5 +1,5 @@
-from DATA.SQL.engine import *
-from UTIL.validadores import valida_usuario
+from data.sql.engine import *
+from util.validadores import valida_usuario
 
 #Nuestra clase CRUD recibe como parametro en su constructor la session
 class CRUD_usuario():

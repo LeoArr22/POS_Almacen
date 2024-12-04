@@ -1,5 +1,5 @@
-from DATA.SQL.engine import Detalle 
-from UTIL.validadores import validar_cantidad, validar_total_prod, validar_ids
+from data.sql.engine import Detalle 
+from util.validadores import validar_cantidad, validar_total_prod, validar_ids
 
 class CRUD_detalle():
     def __init__(self, Session):

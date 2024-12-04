@@ -1,5 +1,5 @@
-from DATA.SQL.engine import *
-from UTIL.validadores import valida_producto
+from data.sql.engine import *
+from util.validadores import valida_producto
 
 class CRUD_producto():
     def __init__(self, Session):

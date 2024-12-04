@@ -1,15 +1,9 @@
-from DATA.SQL.engine import *
-from DATA.CRUD.crud_usuarios import CRUD_usuario
-from GUI.util.generic import leer_imagen, centrar_ventana
-
-
+from data.sql.engine import *
+from data.crud.crud_usuarios import CRUD_usuario
+from gui.util.generic import leer_imagen, centrar_ventana
 
 import customtkinter as ctk
 from tkinter.font import BOLD
-from GUI.util.generic import centrar_ventana, leer_imagen
-from DATA.CRUD.crud_usuarios import CRUD_usuario
-from DATA.SQL.engine import *
-
 
 class LoginApp:
     def __init__(self):
