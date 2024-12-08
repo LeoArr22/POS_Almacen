@@ -1,5 +1,4 @@
 from data.sql.engine import *
-from util.validadores import valida_usuario
 
 #Nuestra clase CRUD recibe como parametro en su constructor la session
 class CRUD_usuario():
@@ -7,7 +6,7 @@ class CRUD_usuario():
         self.session = Session
 
     # Crear usuario
-    @valida_usuario
+    
     def crear_usuario(self, usuario, contrasena):
         if self.obtener_usuario(usuario) is None:
             nuevo_usuario = Vendedor(usuario=usuario, contrasena=contrasena)

@@ -17,7 +17,7 @@ class LoginApp:
         self.frame_fondo.place(x=0, y=0, relwidth=1, relheight=1)
 
         #Coloca la imagen de fondo en el Frame
-        self.fondo = leer_imagen("./POS_Almacen/GUI/login/dibujo-monje.png", (700, 500))
+        self.fondo = leer_imagen("./gui/login/dibujo-monje.png", (700, 500))
         self.fondo_label = ctk.CTkLabel(self.frame_fondo, image=self.fondo, text="")
         self.fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
         

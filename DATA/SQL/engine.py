@@ -13,9 +13,9 @@ class Producto(Base):
     __tablename__ = 'Producto'
     productoID = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String)
-    precio = Column(Float)
+    precio = Column(Integer)
     stock = Column(Integer)
-    costo = Column(Float)
+    costo = Column(Integer)
     codigo_barra = Column(String)
     categoriaID = Column(Integer, ForeignKey('Categoria.categoriaID'))
     
@@ -27,6 +27,7 @@ class Categoria(Base):
     __tablename__ = "Categoria"
     categoriaID = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String)
+    descripcion = Column(String)
     
     # Relación con Producto
     productos = relationship("Producto", back_populates="categoria")  
