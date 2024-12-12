@@ -1,11 +1,10 @@
 from data.sql.engine import *
-from util.validadores import valida_producto
 
 class CRUD_producto():
     def __init__(self, Session):
         self.session = Session
 
-    @valida_producto
+    
     def crear_producto(self, nombre, precio, stock, costo, codigo_barra, categoria_id):
         if self.obtener_producto(nombre) is None:
             nuevo_producto = Producto(nombre=nombre, precio=precio, stock=stock, costo=costo, codigo_barra=codigo_barra, categoriaID=categoria_id)

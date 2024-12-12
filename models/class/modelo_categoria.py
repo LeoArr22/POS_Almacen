@@ -1,4 +1,0 @@
-
-
-
-class modelo_categoria()
