@@ -1,4 +1,4 @@
-from util.validadores import recorre_validadores, longitud_palabra, solo_numero, dentro_rango
+from util.validadores import recorre_validadores, longitud_palabra, solo_numero, longitud_numero, positivo
 
 class ModeloProducto:
     def __init__(self, nombre=None, precio=None, stock=None, costo=None, codigo_barra=None):
@@ -31,7 +31,8 @@ class ModeloProducto:
         if nuevo_precio is not None:
             validadores=[
                 lambda numero: solo_numero(numero),
-                lambda numero: dentro_rango(numero, 1, 99999)
+                lambda numero: longitud_numero(numero, 1, 99999),
+                lambda numero: positivo(numero)
             ]
             recorre_validadores(validadores, nuevo_precio)
             nuevo_precio=int(nuevo_precio)
@@ -46,7 +47,7 @@ class ModeloProducto:
         if nuevo_stock is not None:
             validadores=[
                 lambda numero: solo_numero(numero),
-                lambda numero: dentro_rango(numero, 1, 99999)
+                lambda numero: longitud_numero(numero, 1, 99999)
             ]
             recorre_validadores(validadores, nuevo_stock)
             nuevo_stock=int(nuevo_stock)
@@ -62,7 +63,24 @@ class ModeloProducto:
         if nuevo_costo is not None:
             validadores=[
                 lambda numero: solo_numero(numero),
-                lambda numero: dentro_rango(numero, 1, 99999)
+                lambda numero: longitud_numero(numero, 1, 999999),
+                lambda numero: positivo(numero)
+            ]
+            recorre_validadores(validadores, nuevo_stock)
+            nuevo_stock=int(nuevo_stock)
+            self.__stock=nuevo_stock
+            
+    @property
+    def codigo_barra(self):
+        return self.__codigo_barra
+    
+    @codigo_barra.setter
+    def codigo_barra(self, nuevo_codigo):
+        if nuevo_codigo is not None:
+            validadores=[
+                lambda numero: solo_numero(numero),
+                lambda numero: longitud_numero(numero, 13, 13),
+                lambda numero: positivo(numero)
             ]
             recorre_validadores(validadores, nuevo_stock)
             nuevo_stock=int(nuevo_stock)

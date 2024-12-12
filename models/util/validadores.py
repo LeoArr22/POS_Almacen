@@ -52,9 +52,10 @@ def solo_numero(numero):
         return False, "El valor debe ser un número entero."
     
 def positivo(numero):
-    try:
-        numero = int(numero)
-        
+    if numero > 0:
+        return True, ""
+    else:
+        return False, "El valor debe ser mayor a 0"        
     
     
 # VALIDADOR DE FECHA
