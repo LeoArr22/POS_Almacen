@@ -1,13 +1,6 @@
 import re #Importamos modulo re para trabajar con expresiones regulares
 from datetime import datetime
 
-#VERIFICA QUE NINGUN DATO DE ALGUN OBJETO DE CLASE MODELOS SEA NONE
-def es_completo(self, *atributo):
-        atributos_requeridos=[atributo]
-        for atributo in atributos_requeridos:
-            if getattr(self, atributo) is None:
-                return (False, "No estan todos los campos cargados correctamente")
-        return (True, "")
 
 
 #RECORRE LA LISTA DE VALIDADORES CORRESPONDIENTES
@@ -43,20 +36,25 @@ def solo_letras(palabra):
             
 #VALIDADORES DE INT
 
+def longitud_numero(numero, min, max):
+    if not (min <= len(numero) <= max):
+        if (min != max): 
+            return False, f"Debe tener entre {min} y {max} dígitos."
+        else:
+            return False, f"Debe tener exactamente {min} digitos" 
+    return True, ""
+
 def solo_numero(numero):
-    numero=str(numero)
-    if re.fullmatch("[0-9]+", numero):
-        return (True, "")    
-    else:
-        return (False, "Solo se permiten numeros")
+    try:
+        numero = int(numero)
+        return True, ""
+    except ValueError:
+        return False, "El valor debe ser un número entero."
     
-def dentro_rango(numero, min, max):
-    if numero==0:
-        return (False, "No puede ser cero")
-    elif numero < min or numero > max:
-        return (False, f"Fuera de rango (de {min} a {max})")
-    else:
-        return (True, "")
+def positivo(numero):
+    try:
+        numero = int(numero)
+        
     
     
 # VALIDADOR DE FECHA

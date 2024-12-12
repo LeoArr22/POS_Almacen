@@ -4,7 +4,6 @@ class CRUD_categoria():
     def __init__(self, Session):
         self.session = Session
 
-      
     def crear_categoria(self, nombre):
         if self.obtener_categoria(nombre) is None:
             nueva_categoria = Categoria(nombre=nombre)
