@@ -42,7 +42,7 @@ class CRUD_producto():
             return True
         return False
 
-with Session() as session:
-    crud_producto=CRUD_producto(session)
-    nuevo=crud_producto.crear_producto("Coca-Cola", 3000, 10, 2000, 123456712876, 1)
+# with Session() as session:
+#     crud_producto=CRUD_producto(session)
+#     nuevo=crud_producto.crear_producto("Coca-Cola", 3000, 10, 2000, 123456712876, 1)
     

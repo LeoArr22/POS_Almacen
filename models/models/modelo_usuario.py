@@ -2,8 +2,16 @@ from util.validadores import recorre_validadores, solo_letras, longitud_palabra,
 
 class ModeloUsuario:
     def __init__(self, usuario, contrasena ):
-        self.usuario = usuario,
+        self.usuario = usuario
         self.contrasena = contrasena
+        
+    #Vamos a usarlo para el create    
+    def es_completo(self):
+        atributos_requeridos = ["usuario", "contrasena"]
+        for atributo in atributos_requeridos:
+            if getattr(self, atributo) is None:  #getattr: obtiene el valor de cada atributo. Si alguno es None 
+                return False                     #significa que nuestro modelo aun no esta completo y nos devuelve False
+        return True 
 
     @property
     def usuario(self):
