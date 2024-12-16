@@ -25,7 +25,7 @@ class ModeloProducto:
     def nombre(self, nuevo_nombre):
         if nuevo_nombre is not None:
             validadores = [
-                lambda palabra: longitud_palabra(nuevo_nombre, 1, 20)
+                lambda palabra: longitud_palabra(palabra, 1, 20)
             ]
             recorre_validadores(validadores, nuevo_nombre)
         self.__nombre = nuevo_nombre
@@ -38,9 +38,9 @@ class ModeloProducto:
     def precio(self, nuevo_precio):
         if nuevo_precio is not None:
             validadores = [
-                lambda numero: solo_numero(nuevo_precio),
-                lambda numero: longitud_numero(nuevo_precio, 1, 99999),
-                lambda numero: positivo(nuevo_precio)
+                lambda numero: solo_numero(numero),
+                lambda numero: longitud_numero(numero, 1, 99999),
+                lambda numero: positivo(numero)
             ]
             recorre_validadores(validadores, nuevo_precio)
             nuevo_precio = int(nuevo_precio)
@@ -54,8 +54,8 @@ class ModeloProducto:
     def stock(self, nuevo_stock):
         if nuevo_stock is not None:
             validadores = [
-                lambda numero: solo_numero(nuevo_stock),
-                lambda numero: longitud_numero(nuevo_stock, 1, 99999)
+                lambda numero: solo_numero(numero),
+                lambda numero: longitud_numero(numero, 1, 99999)
             ]
             recorre_validadores(validadores, nuevo_stock)
             nuevo_stock = int(nuevo_stock)
@@ -69,9 +69,9 @@ class ModeloProducto:
     def costo(self, nuevo_costo):
         if nuevo_costo is not None:
             validadores = [
-                lambda numero: solo_numero(nuevo_costo),
-                lambda numero: longitud_numero(nuevo_costo, 1, 999999),
-                lambda numero: positivo(nuevo_costo)
+                lambda numero: solo_numero(numero),
+                lambda numero: longitud_numero(numero, 1, 999999),
+                lambda numero: positivo(numero)
             ]
             recorre_validadores(validadores, nuevo_costo)
             nuevo_costo = int(nuevo_costo)
@@ -85,9 +85,9 @@ class ModeloProducto:
     def codigo_barra(self, nuevo_codigo):
         if nuevo_codigo is not None:
             validadores = [
-                lambda numero: solo_numero(nuevo_codigo),
-                lambda numero: longitud_numero(nuevo_codigo, 13, 13),
-                lambda numero: positivo(nuevo_codigo)
+                lambda numero: solo_numero(numero),
+                lambda numero: longitud_numero(numero, 13, 13),
+                lambda numero: positivo(numero)
             ]
             recorre_validadores(validadores, nuevo_codigo)
             nuevo_codigo = int(nuevo_codigo)
