@@ -21,9 +21,11 @@ class CRUD_producto():
         except NoResultFound:
             return None
 
-    def actualizar_producto(self, nombre, nuevo_precio=None, nuevo_stock=None, nuevo_costo=None):
+    def actualizar_producto(self, nombre, nuevo_nombre=None, nuevo_precio=None, nuevo_stock=None, nuevo_costo=None):
         producto = self.obtener_producto(nombre)
         if producto is not None:
+            if nuevo_nombre is not None:
+                producto.nombre = nuevo_nombre
             if nuevo_precio is not None:
                 producto.precio = nuevo_precio
             if nuevo_stock is not None:

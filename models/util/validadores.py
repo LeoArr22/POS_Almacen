@@ -48,7 +48,7 @@ def solo_numero(numero):
     try:
         numero = int(numero)
         return True, ""
-    except ValueError:
+    except:
         return False, "El valor debe ser un número entero."
     
 def positivo(numero):
@@ -65,5 +65,5 @@ def valida_fecha(fecha, formato=r"%Y-%m-%d"):
     try:
         datetime.strptime(fecha, formato)
         return (True, "")
-    except ValueError:
+    except:
         return (False, "Fecha no valida (YYYY-MM-DD)")

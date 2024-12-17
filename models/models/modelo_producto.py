@@ -39,7 +39,7 @@ class ModeloProducto:
         if nuevo_precio is not None:
             validadores = [
                 lambda numero: solo_numero(numero),
-                lambda numero: longitud_numero(numero, 1, 99999),
+                lambda numero: longitud_numero(numero, 1, 10),
                 lambda numero: positivo(numero)
             ]
             recorre_validadores(validadores, nuevo_precio)
@@ -55,7 +55,7 @@ class ModeloProducto:
         if nuevo_stock is not None:
             validadores = [
                 lambda numero: solo_numero(numero),
-                lambda numero: longitud_numero(numero, 1, 99999)
+                lambda numero: longitud_numero(numero, 1, 10)
             ]
             recorre_validadores(validadores, nuevo_stock)
             nuevo_stock = int(nuevo_stock)
