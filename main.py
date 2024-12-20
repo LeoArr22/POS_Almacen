@@ -1,11 +1,10 @@
 from gui.master.master import MasterPanel
 
-# main.py
-from auth import verificar_o_crear_vendedor  # Importas la función desde auth.py
+# # main.py
+# from auth import verificar_o_crear_vendedor  # Importas la función desde auth.py
 
-if __name__ == "__main__":
-    verificar_o_crear_vendedor()  # Llamas a la función para verificar o crear un vendedor
-    print("Programa iniciado. Aquí puedes añadir más lógica del sistema.")
+# if __name__ == "__main__":
+#     verificar_o_crear_vendedor()  # Llamas a la función para verificar o crear un vendedor
 
 # from gui.login.login import LoginApp
 
@@ -24,6 +23,6 @@ if __name__ == "__main__":
 # except ValueError as e:
 #     print(e)
 
-MasterPanel
+MasterPanel()
 # LoginApp
 
