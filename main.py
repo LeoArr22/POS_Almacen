@@ -1,4 +1,12 @@
 from gui.master.master import MasterPanel
+
+# main.py
+from auth import verificar_o_crear_vendedor  # Importas la función desde auth.py
+
+if __name__ == "__main__":
+    verificar_o_crear_vendedor()  # Llamas a la función para verificar o crear un vendedor
+    print("Programa iniciado. Aquí puedes añadir más lógica del sistema.")
+
 # from gui.login.login import LoginApp
 
 # from models.models.modelo_producto import ModeloProducto
