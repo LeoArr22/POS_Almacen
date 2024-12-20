@@ -10,7 +10,7 @@ class MasterPanel:
 
         self.ventana = ctk.CTk()  # Crea la ventana principal
         self.ventana.title('TuAlmaZen')
-        centrar_ventana(self.ventana, 1200, 650)
+        centrar_ventana(self.ventana, 1300, 700)
         self.ventana.resizable(width=1, height=1)
         self.ventana.attributes("-topmost", True)  # Mantener siempre en la parte superior
 

@@ -1,6 +1,5 @@
 # auth.py
-from sqlalchemy.orm import sessionmaker
-from DATA.SQL import engine, Vendedor
+from data.sql.engine import *
 
 # Crear la sesión con el engine existente
 Session = sessionmaker(bind=engine)
