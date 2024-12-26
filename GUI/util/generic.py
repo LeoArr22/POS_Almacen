@@ -1,30 +1,16 @@
-from PIL import Image, ImageDraw, ImageTk
-
-def crear_degradado(ancho, alto, color1, color2):
-    """
-    Genera un degradado vertical entre dos colores.
-    """
-    img = Image.new("RGBA", (ancho, alto), color=color1)
-    draw = ImageDraw.Draw(img)
-    for i in range(alto):
-        ratio = i / alto
-        r = int(color1[0] * (1 - ratio) + color2[0] * ratio)
-        g = int(color1[1] * (1 - ratio) + color2[1] * ratio)
-        b = int(color1[2] * (1 - ratio) + color2[2] * ratio)
-        draw.line([(0, i), (ancho, i)], fill=(r, g, b))
-    return img
+from PIL import Image
 
 
-def configurar_boton_elegante(boton, border_color="#000000", border_width=4):
-    """
-    Configura un botón con sombras y bordes elegantes.
-    """
-    boton.configure(border_width=border_width, border_color=border_color)
 
 #Funcion que lee una imagen de una ruta (path) y redimensiona segun tupla (size).
 #Esto es convertido por ImageTk.PhotoImage en una objeto para ser usado por Tkinter
-def leer_imagen (path, size):
-    return ImageTk.PhotoImage(Image.open(path).resize(size, Image.LANCZOS))
+import customtkinter as ctk
+from PIL import Image
+
+def leer_imagen(path, size):
+    return ctk.CTkImage(light_image=Image.open(path).resize(size, Image.LANCZOS),
+                        size=size)
+
 
 
 #ventana.geometry("ancho x alto + posicion_x + posicion_y")
