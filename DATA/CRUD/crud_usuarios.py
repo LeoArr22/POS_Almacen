@@ -50,7 +50,7 @@ class CRUD_usuario():
             print(f"Contraseña en BD: {usuario_obj.contrasena}, Contraseña ingresada: {contrasena}")
             print(f"Tipo en BD: {type(usuario_obj.contrasena)}, Tipo ingresado: {type(contrasena)}")
             if (int(usuario_obj.contrasena) == contrasena):
-                return True
+                return usuario_obj
         return False
 
 
