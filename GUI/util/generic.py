@@ -24,3 +24,8 @@ def centrar_ventana(ventana, aplicacion_ancho, aplicacion_largo):
     x = int((pantalla_ancho/2) - (aplicacion_ancho/2))
     y = int((pantalla_largo/2) - (aplicacion_largo/2))
     return ventana.geometry(f"{aplicacion_ancho}x{aplicacion_largo}+{x}+{y}")
+
+#Recibe una ventana, la destruye y pasa a la siguiente
+def destruir(ventana_actual, proxima_ventana):
+        ventana_actual.destroy()  # Cierra la ventana actual
+        proxima_ventana()

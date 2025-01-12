@@ -27,7 +27,7 @@ class LoginApp:
         self.fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         # Revisar si mostrar mensaje inicial
-        if not self.verificar_mensaje_mostrado():
+        if  not self.verificar_mensaje_mostrado():
             self.crear_usuario_admin()
             self.mostrar_mensaje_inicial()
         else:

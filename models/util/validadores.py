@@ -49,7 +49,7 @@ def solo_numero(numero):
         numero = int(numero)
         return True, ""
     except:
-        return False, "El valor debe ser un número entero."
+        return False, "El valor debe ser un número entero"
     
 def positivo(numero):
     numero=int(numero)

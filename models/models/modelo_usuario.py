@@ -1,4 +1,4 @@
-from util.validadores import recorre_validadores, solo_letras, longitud_palabra, solo_numero, longitud_numero
+from models.util.validadores import recorre_validadores, solo_letras, longitud_palabra, solo_numero, longitud_numero
 
 class ModeloUsuario:
     def __init__(self, usuario, contrasena ):
