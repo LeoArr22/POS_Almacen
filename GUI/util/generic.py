@@ -29,3 +29,4 @@ def centrar_ventana(ventana, aplicacion_ancho, aplicacion_largo):
 def destruir(ventana_actual, proxima_ventana):
         ventana_actual.destroy()  # Cierra la ventana actual
         proxima_ventana()
+    

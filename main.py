@@ -23,6 +23,7 @@ from gui.login.login import LoginApp
 # except ValueError as e:
 #     print(e)
 
-LoginApp()
-# LoginApp
+if __name__ == "__main__":
+    LoginApp()
+    # LoginApp
 

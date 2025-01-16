@@ -9,7 +9,7 @@ class UsuariosApp:
     def __init__(self):
         self.ventana = ctk.CTk()
         self.ventana.title('Listado de Usuarios')
-        centrar_ventana(self.ventana, 700, 600)  # Ampliamos el tamaño de la ventana
+        centrar_ventana(self.ventana, 700, 600)
         self.ventana.resizable(width=0, height=0)
 
         self.ventana.configure(bg="#1C2124")
@@ -17,6 +17,74 @@ class UsuariosApp:
         self.frame_principal.place(x=0, y=0, relwidth=1, relheight=1)
 
         self.mostrar_contrasenas = False
+
+        
+        self.label_nav = ctk.CTkLabel(
+            self.frame_principal,
+            text="Menú de Navegación →",
+            fg_color="#1C2124",
+            font=("Helvetica", 20, "bold"),  # Tamaño del texto reducido para mayor ajuste
+            text_color="#F3920F",
+            height=40,
+        )
+        self.label_nav.place(x=10, y=10)
+
+        # Botones superiores para navegación
+        self.vender_button = ctk.CTkButton(
+            self.frame_principal,
+            text="Vender",
+            command=lambda: self.ir_a("vender"),
+            border_width=2,
+            fg_color="#1C2124",
+            text_color="#F3920F",
+            font=("Helvetica", 16, "bold"),
+            hover_color="#2C353A",
+            border_color="#F3920F",
+            width=40,
+            height=40
+        )
+        self.vender_button.place(x=250, y=10)
+
+        self.productos_button = ctk.CTkButton(
+            self.frame_principal,
+            text="Productos",
+            command=lambda: self.ir_a("productos"),
+            border_width=2,
+            fg_color="#1C2124",
+            text_color="#F3920F",
+            font=("Helvetica", 16, "bold"),
+            hover_color="#2C353A",
+            border_color="#F3920F",
+            width=40,
+            height=40
+        )
+        self.productos_button.place(x=350, y=10)
+
+        self.libro_ventas_button = ctk.CTkButton(
+            self.frame_principal,
+            text="Libro de Ventas",
+            command=lambda: self.ir_a("libro_ventas"),
+            border_width=2,
+            fg_color="#1C2124",
+            text_color="#F3920F",
+            font=("Helvetica", 16, "bold"),
+            hover_color="#2C353A",
+            border_color="#F3920F",
+            width=40,
+            height=40
+        )
+        self.libro_ventas_button.place(x=475, y=10)
+
+        # Label para el título, ajustado más cerca del listado
+        self.label_titulo = ctk.CTkLabel(
+            self.frame_principal,
+            text="Gestor de Usuarios",
+            fg_color="#1C2124",
+            font=("Helvetica", 30, "bold"),  # Tamaño del texto reducido para mayor ajuste
+            text_color="#F3920F",
+            height=40,
+        )
+        self.label_titulo.place(relx=0.5, y=80, anchor="n")
 
         # Estilos del Treeview
         style = ttk.Style()
@@ -35,41 +103,25 @@ class UsuariosApp:
         self.tree.heading("ID", text="ID", command=lambda: self.ordenar_columna("ID"))
         self.tree.heading("Usuario", text="Usuario", command=lambda: self.ordenar_columna("Usuario"))
         self.tree.heading("Contraseña", text="Contraseña", command=lambda: self.ordenar_columna("Contraseña"))
-        self.tree.grid(row=0, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
+        self.tree.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
 
         # Scrollbar
         self.scrollbar = ctk.CTkScrollbar(self.frame_principal, orientation="vertical", command=self.tree.yview)
-        self.scrollbar.grid(row=0, column=3, sticky="ns")
+        self.scrollbar.grid(row=1, column=3, sticky="ns")
         self.tree.configure(yscrollcommand=self.scrollbar.set)
 
         # Label para mensajes de error
         self.error_label = ctk.CTkLabel(self.frame_principal, text="", fg_color="#F3920F", font=("Helvetica", 14, "bold"), text_color="white", width=700, height=30)
-        self.error_label.grid(row=1, column=0, columnspan=3, padx=10, pady=5, sticky="ew")
+        self.error_label.grid(row=2, column=0, columnspan=3, padx=10, pady=5, sticky="ew")
 
         # Frame para campos y botones
         self.botones_frame = ctk.CTkFrame(self.frame_principal, height=50, fg_color="#1C2124")
-        self.botones_frame.grid(row=2, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
+        self.botones_frame.grid(row=3, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
         self.botones_frame.grid_rowconfigure(0, weight=1)
 
         # CRUD
         self.crud_usuario = CRUD_usuario(Session())
         self.datos = self.cargar_usuarios()
-
-        # Botón para flecha "Atrás"
-        self.atras_button = ctk.CTkButton(
-            self.frame_principal,
-            text="←VOLVER",
-            command=lambda: self.volver(self.ventana),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=40,
-            height=40
-        )
-        self.atras_button.place(x=10, y=416)  
 
         # Campos para crear usuario
         self.usuario_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de usuario", width=200)
@@ -206,9 +258,4 @@ class UsuariosApp:
         self.datos = self.cargar_usuarios()
         texto = "Ocultar Contraseña" if self.mostrar_contrasenas else "Mostrar Contraseña"
         self.toggle_password_button.configure(text=texto)
-        
-    def volver(self, ventana_actual):
-        from gui.master.master import MasterPanel
-        destruir(ventana_actual, MasterPanel)
 
-UsuariosApp()
