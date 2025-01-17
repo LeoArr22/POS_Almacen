@@ -1,10 +1,16 @@
-from models.util.validadores import longitud_palabra, recorre_validadores, solo_letras, es_completo
-
+from models.util.validadores import longitud_palabra, recorre_validadores, solo_letras
 
 class ModeloCategoria:
     def __init__(self, nombre=None, descripcion=None):
         self.nombre = nombre
         self.descripcion = descripcion
+        
+    def es_completo(self):
+        atributos_requeridos = ["nombre", "precio", "stock", "costo", "codigo_barra"]
+        for atributo in atributos_requeridos:
+            if getattr(self, atributo) is None:  # Si algún atributo es None
+                return None, f"El campo '{atributo}' está incompleto"  # Retorna el error
+        return True, ""    
         
 #NOMBRE    
     @property #Convertimos el metodo en un getter
@@ -32,15 +38,17 @@ class ModeloCategoria:
     
     @descripcion.setter
     def descripcion(self, nueva_descripcion):
-        if nueva_descripcion is not None:
+        if nueva_descripcion is not None and nueva_descripcion.strip() != "":
             validadores = [
                 lambda palabra: longitud_palabra(palabra, 0, 40)
             ]
-            recorre_validadores(validadores, nueva_descripcion)
-            self.__descripcion = nueva_descripcion
+            resultado = recorre_validadores(validadores, nueva_descripcion)
+            if resultado is not None:
+                return resultado
+        self.__descripcion = nueva_descripcion
+
     
-    def completo(self):
-        es_completo("Nombre")
+  
         
         
 

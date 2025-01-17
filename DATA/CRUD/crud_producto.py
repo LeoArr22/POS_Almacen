@@ -4,7 +4,6 @@ class CRUD_producto():
     def __init__(self, Session):
         self.session = Session
 
-    
     def crear_producto(self, nombre, precio, stock, costo, codigo_barra, categoria_id):
         if self.obtener_producto(nombre) is None:
             nuevo_producto = Producto(nombre=nombre, precio=precio, stock=stock, costo=costo, codigo_barra=codigo_barra, categoriaID=categoria_id)
@@ -12,7 +11,7 @@ class CRUD_producto():
             self.session.commit()
             return nuevo_producto
         else:
-            print("Ese producto ya está registrado")
+            return None, "Ese producto ya está registrado"
 
     def obtener_producto(self, nombre):
         try:
@@ -20,6 +19,15 @@ class CRUD_producto():
             return producto
         except NoResultFound:
             return None
+        
+    def obtener_todos_productos(self):
+        try:
+            productos = self.session.query(Producto, Categoria.nombre).join(Categoria, Producto.categoriaID == Categoria.categoriaID).all()
+
+            return productos
+        except Exception as e:
+            return None, f"Error al obtener productos"     
+        
 
     def actualizar_producto(self, nombre, nuevo_nombre=None, nuevo_precio=None, nuevo_stock=None, nuevo_costo=None):
         producto = self.obtener_producto(nombre)
@@ -34,7 +42,7 @@ class CRUD_producto():
                 producto.costo = nuevo_costo
             self.session.commit()
             return producto
-        return None
+        return None, "Producto no encontrado para actualizar"
 
     def eliminar_producto(self, nombre):
         producto = self.obtener_producto(nombre)
@@ -42,9 +50,4 @@ class CRUD_producto():
             self.session.delete(producto)
             self.session.commit()
             return True
-        return False
-
-# with Session() as session:
-#     crud_producto=CRUD_producto(session)
-#     nuevo=crud_producto.crear_producto("Coca-Cola", 3000, 10, 2000, 123456712876, 1)
-    
+        return False, "Producto no encontrado para eliminar"

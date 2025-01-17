@@ -8,15 +8,14 @@ class ModeloProducto:
         self.costo = costo
         self.codigo_barra = codigo_barra
 
-#SE USARA PARA EL CREATE. VALIDA QUE TODOS LOS CAMPOS TENGAS DATOS
+    # SE USARÁ PARA EL CREATE. VALIDA QUE TODOS LOS CAMPOS TENGAN DATOS
     def es_completo(self):
         atributos_requeridos = ["nombre", "precio", "stock", "costo", "codigo_barra"]
         for atributo in atributos_requeridos:
-            if getattr(self, atributo) is None: #getattr: obtiene el valor de cada atributo. Si alguno es None
-                raise ValueError(f"El campo '{atributo}' está incompleto") #significa que nuestro modelo aun 
-                                                                           #no esta completo y nos devuelve False
-        return True
-        
+            if getattr(self, atributo) is None:  # Si algún atributo es None
+                return None, f"El campo '{atributo}' está incompleto"  # Retorna el error
+        return True, ""
+
     @property
     def nombre(self):
         return self.__nombre
@@ -27,7 +26,9 @@ class ModeloProducto:
             validadores = [
                 lambda palabra: longitud_palabra(palabra, 1, 20)
             ]
-            recorre_validadores(validadores, nuevo_nombre)
+            resultado = recorre_validadores(validadores, nuevo_nombre)
+            if resultado is not None:
+                return resultado  # Retorna el error de validación
         self.__nombre = nuevo_nombre
 
     @property
@@ -42,7 +43,9 @@ class ModeloProducto:
                 lambda numero: longitud_numero(numero, 1, 10),
                 lambda numero: positivo(numero)
             ]
-            recorre_validadores(validadores, nuevo_precio)
+            resultado = recorre_validadores(validadores, nuevo_precio)
+            if resultado is not None:
+                return resultado  # Retorna el error de validación
             nuevo_precio = int(nuevo_precio)
         self.__precio = nuevo_precio
 
@@ -57,7 +60,9 @@ class ModeloProducto:
                 lambda numero: solo_numero(numero),
                 lambda numero: longitud_numero(numero, 1, 10)
             ]
-            recorre_validadores(validadores, nuevo_stock)
+            resultado = recorre_validadores(validadores, nuevo_stock)
+            if resultado is not None:
+                return resultado  # Retorna el error de validación
             nuevo_stock = int(nuevo_stock)
         self.__stock = nuevo_stock
 
@@ -73,7 +78,9 @@ class ModeloProducto:
                 lambda numero: longitud_numero(numero, 1, 999999),
                 lambda numero: positivo(numero)
             ]
-            recorre_validadores(validadores, nuevo_costo)
+            resultado = recorre_validadores(validadores, nuevo_costo)
+            if resultado is not None:
+                return resultado  # Retorna el error de validación
             nuevo_costo = int(nuevo_costo)
         self.__costo = nuevo_costo
 
@@ -89,6 +96,8 @@ class ModeloProducto:
                 lambda numero: longitud_numero(numero, 13, 13),
                 lambda numero: positivo(numero)
             ]
-            recorre_validadores(validadores, nuevo_codigo)
+            resultado = recorre_validadores(validadores, nuevo_codigo)
+            if resultado is not None:
+                return resultado  # Retorna el error de validación
             nuevo_codigo = int(nuevo_codigo)
         self.__codigo_barra = nuevo_codigo

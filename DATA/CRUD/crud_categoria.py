@@ -11,7 +11,7 @@ class CRUD_categoria():
             self.session.commit()
             return nueva_categoria
         else:
-            print("Esa categoría ya está registrada")
+            return None, "Esa categoría ya está registrada"
 
     def obtener_categoria(self, nombre):
         try:
@@ -26,7 +26,7 @@ class CRUD_categoria():
             categoria.nombre = nuevo_nombre
             self.session.commit()
             return categoria
-        return None
+        return None, "Categoría no encontrada para actualizar"
 
     def eliminar_categoria(self, nombre):
         categoria = self.obtener_categoria(nombre)
@@ -34,8 +34,8 @@ class CRUD_categoria():
             self.session.delete(categoria)
             self.session.commit()
             return True
-        return False
+        return False, "Categoría no encontrada para eliminar"
 
 with Session() as session:
-    crud_categoria=CRUD_categoria(session)
+    crud_categoria = CRUD_categoria(session)
     crud_categoria.crear_categoria("Almacennnn")

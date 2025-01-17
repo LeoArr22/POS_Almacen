@@ -48,7 +48,7 @@ class UsuariosApp:
         self.productos_button = ctk.CTkButton(
             self.frame_principal,
             text="Productos",
-            command=lambda: self.ir_a("productos"),
+            command=lambda: self.proxima("Productos"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -163,6 +163,12 @@ class UsuariosApp:
         self.frame_principal.grid_columnconfigure(0, weight=1)
 
         self.ventana.mainloop()
+
+    def proxima(self, nombre):
+        if nombre=="Productos":
+            from gui.productos.gui_productos import ProductosApp
+            destruir(self.ventana, ProductosApp)
+
 
     def cargar_usuarios(self):
         usuarios = self.crud_usuario.obtener_todos_usuarios()

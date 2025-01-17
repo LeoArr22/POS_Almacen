@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter.font import BOLD
 from gui.util.generic import centrar_ventana, leer_imagen, destruir
 from gui.usuarios.gui_usuarios import UsuariosApp
+from gui.productos.gui_productos import ProductosApp
 from datetime import datetime
 
 
@@ -83,6 +84,7 @@ class MasterPanel:
             corner_radius=20,
             border_width=2,
             border_color=boton_borde,
+            command=lambda: destruir(ventana, ProductosApp)
         )
         self.boton_productos.place(relx=0.75, rely=0.6, anchor="center")
 
