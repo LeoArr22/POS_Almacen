@@ -160,6 +160,11 @@ class ProductosApp:
             self.tree.delete(row)
         datos = []
         
+          # Si no hay productos, mostrar mensaje en la primera fila
+        if not productos:
+            self.tree.insert("", "end", values=("No hay productos cargados", "", "", "", "", "", ""), tags=("empty",))
+            return datos
+        
         for index, (producto, categoria_nombre) in enumerate(productos):
             tag = "evenrow" if index % 2 == 0 else "oddrow"
             self.tree.insert("", "end", values=(producto.productoID, categoria_nombre, producto.nombre, producto.precio,

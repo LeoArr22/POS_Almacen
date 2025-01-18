@@ -26,7 +26,9 @@ class CRUD_producto():
 
             return productos
         except Exception as e:
-            return None, f"Error al obtener productos"     
+            return None    
+        
+         
         
 
     def actualizar_producto(self, nombre, nuevo_nombre=None, nuevo_precio=None, nuevo_stock=None, nuevo_costo=None):
