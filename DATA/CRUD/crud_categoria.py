@@ -13,6 +13,15 @@ class CRUD_categoria():
         else:
             return None, "Esa categoría ya está registrada"
 
+    def obtener_categorias(self):
+        """Obtiene todas las categorías disponibles desde el CRUD."""
+        try:
+            categorias = self.session.query(Categoria).all()  # Obtiene todas las categorías
+            return [(categoria.categoriaID, categoria.nombre) for categoria in categorias]  # Usa categoriaID
+        except Exception as e:
+            return [], f"Error al obtener las categorías: {str(e)}"
+
+
     def obtener_categoria(self, nombre):
         try:
             categoria = self.session.query(Categoria).filter_by(nombre=nombre).first()
@@ -36,6 +45,6 @@ class CRUD_categoria():
             return True
         return False, "Categoría no encontrada para eliminar"
 
-with Session() as session:
-    crud_categoria = CRUD_categoria(session)
-    crud_categoria.crear_categoria("Almacennnn")
+# with Session() as session:
+#     crud_categoria = CRUD_categoria(session)
+#     crud_categoria.crear_categoria("Puchos")

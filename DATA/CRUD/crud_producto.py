@@ -9,7 +9,7 @@ class CRUD_producto():
             nuevo_producto = Producto(nombre=nombre, precio=precio, stock=stock, costo=costo, codigo_barra=codigo_barra, categoriaID=categoria_id)
             self.session.add(nuevo_producto)
             self.session.commit()
-            return nuevo_producto
+            return nuevo_producto, None
         else:
             return None, "Ese producto ya está registrado"
 

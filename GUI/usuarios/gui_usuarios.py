@@ -265,3 +265,4 @@ class UsuariosApp:
         texto = "Ocultar Contraseña" if self.mostrar_contrasenas else "Mostrar Contraseña"
         self.toggle_password_button.configure(text=texto)
 
+

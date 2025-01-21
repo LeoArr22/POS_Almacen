@@ -133,6 +133,7 @@ class ProductosApp:
 
         # CRUD
         self.crud_producto = CRUD_producto(Session())
+        self.crud_categoria = CRUD_categoria(Session())
         self.datos = self.cargar_datos()
 
         # Botón Crear Producto
@@ -185,27 +186,175 @@ class ProductosApp:
             tag = "evenrow" if index % 2 == 0 else "oddrow"
             self.tree.insert("", "end", values=dato, tags=(tag,))
 
-    def crear_producto(self):
-        # usuario = self.usuario_entry.get()
-        # contrasena = self.contrasena_entry.get()
-        # try:
-        #     modelo_usuario = ModeloUsuario(usuario, contrasena)
-        #     if not modelo_usuario.es_completo():
-        #         raise ValueError("Faltan campos por completar")
-        #     resultado, error = self.crud_usuario.crear_usuario(usuario, contrasena)
-        #     if error:
-        #         self.error_label.configure(text=error, text_color="#FF0000")  # Mensaje de error en rojo
-        #         return
-        #     self.usuario_entry.delete(0, "end")
-        #     self.contrasena_entry.delete(0, "end")
-        #     self.datos = self.cargar_usuarios()
-        #     self.error_label.configure(text="Usuario creado con éxito.", text_color="#00FF00")  # Mensaje de éxito
-        # except ValueError as e:
-        #     self.error_label.configure(text=str(e), text_color="#FF0000")
-        # except Exception as e:
-        #     self.error_label.configure(text=f"Error inesperado: {str(e)}", text_color="#FF0000")
-        pass
+    def aceptar(self):
+        """Valida y guarda el producto."""
+        try:
+            # Validación de los datos del producto
+            modelo_producto = ModeloProducto(
+                nombre=self.nombre_var.get(),
+                precio=self.precio_var.get(),
+                stock=self.stock_var.get(),
+                costo=self.costo_var.get(),
+                codigo_barra=self.codigo_barra_var.get(),
+            )
+            if not modelo_producto.es_completo():
+                raise ValueError("Faltan campos por completar")
 
+            # Obtener el ID de la categoría seleccionada
+            categoria_nombre = self.categoria_var.get()  # Nombre de la categoría seleccionada
+            categoria_id = self.categorias_dict.get(categoria_nombre)  # ID correspondiente
+
+            if not categoria_id:
+                raise ValueError("Categoría no válida seleccionada")
+
+            # Crear producto en la base de datos
+            resultado, error = self.crud_producto.crear_producto(
+                modelo_producto.nombre,
+                modelo_producto.precio,
+                modelo_producto.stock,
+                modelo_producto.costo,
+                modelo_producto.codigo_barra,
+                categoria_id
+            )
+            if error:
+                self.mensaje_label.configure(text=error, text_color="#FF0000")
+                return
+
+            # Mostrar éxito y limpiar campos
+            self.mensaje_label.configure(text="Producto creado con éxito", text_color="#00FF00")
+            self.nombre_var.set("")
+            self.precio_var.set("")
+            self.stock_var.set("")
+            self.costo_var.set("")
+            self.codigo_barra_var.set("")
+            self.categoria_var.set("")
+            self.nombre_entry.focus()
+
+        except ValueError as ve:
+            # Errores de validación controlados
+            self.mensaje_label.configure(text=str(ve), text_color="#FF0000")
+        except Exception as e:
+            # Errores inesperados
+            self.mensaje_label.configure(text=f"Error inesperado: {str(e)}", text_color="#FF0000")
+
+
+    def crear_producto(self):
+        """Abre una ventana emergente para crear un producto."""
+        # Crear ventana emergente
+        self.popup = ctk.CTkToplevel(self.ventana)
+        self.popup.title("Crear Producto")
+        self.popup.transient(self.ventana)  # Marcar como ventana hija
+        self.popup.grab_set()  # Bloquear interacción con la ventana principal
+        centrar_ventana(self.popup, 600, 400)  # Centrar la ventana
+
+        # Configurar diseño de la ventana emergente
+        
+        self.popup.configure(bg="#1C2124", fg_color="#1C2124")
+        self.popup.grid_columnconfigure(0, weight=1)
+        self.popup.grid_columnconfigure(1, weight=1)
+
+        # Variables de entrada
+        self.nombre_var = ctk.StringVar()
+        self.precio_var = ctk.StringVar()
+        self.stock_var = ctk.StringVar()
+        self.costo_var = ctk.StringVar()
+        self.codigo_barra_var = ctk.StringVar()
+        self.categoria_var = ctk.StringVar()
+
+        # Etiquetas y entradas
+        ctk.CTkLabel(
+            self.popup, text="Nombre:", font=("Helvetica", 16, "bold"),
+            text_color="#F3920F", fg_color="#1C2124"
+        ).grid(row=0, column=0, padx=10, pady=5, sticky="e")
+
+        self.nombre_entry = ctk.CTkEntry(
+            self.popup, textvariable=self.nombre_var, width=250,
+            fg_color="#2C353A", text_color="#FFFFFF"
+        )
+        self.nombre_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+
+        ctk.CTkLabel(
+            self.popup, text="Precio:", font=("Helvetica", 16, "bold"),
+            text_color="#F3920F", fg_color="#1C2124"
+        ).grid(row=1, column=0, padx=10, pady=5, sticky="e")
+
+        ctk.CTkEntry(
+            self.popup, textvariable=self.precio_var, width=250,
+            fg_color="#2C353A", text_color="#FFFFFF"
+        ).grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+        ctk.CTkLabel(
+            self.popup, text="Stock:", font=("Helvetica", 16, "bold"),
+            text_color="#F3920F", fg_color="#1C2124"
+        ).grid(row=2, column=0, padx=10, pady=5, sticky="e")
+
+        ctk.CTkEntry(
+            self.popup, textvariable=self.stock_var, width=250,
+            fg_color="#2C353A", text_color="#FFFFFF"
+        ).grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+        ctk.CTkLabel(
+            self.popup, text="Costo:", font=("Helvetica", 16, "bold"),
+            text_color="#F3920F", fg_color="#1C2124"
+        ).grid(row=3, column=0, padx=10, pady=5, sticky="e")
+
+        ctk.CTkEntry(
+            self.popup, textvariable=self.costo_var, width=250,
+            fg_color="#2C353A", text_color="#FFFFFF"
+        ).grid(row=3, column=1, padx=10, pady=5, sticky="w")
+
+        ctk.CTkLabel(
+            self.popup, text="Código de Barra:", font=("Helvetica", 16, "bold"),
+            text_color="#F3920F", fg_color="#1C2124"
+        ).grid(row=4, column=0, padx=10, pady=5, sticky="e")
+
+        ctk.CTkEntry(
+            self.popup, textvariable=self.codigo_barra_var, width=250,
+            fg_color="#2C353A", text_color="#FFFFFF"
+        ).grid(row=4, column=1, padx=10, pady=5, sticky="w")
+
+        # Listado de categorías
+        categorias = self.crud_categoria.obtener_categorias()
+        if isinstance(categorias, tuple):
+            categorias, error = categorias
+            if error:
+                self.mensaje_label.configure(text=error, text_color="#FF0000")
+                return
+
+        # Crear un diccionario para mapear nombres a IDs
+        self.categorias_dict = {nombre: id_ for id_, nombre in categorias}
+
+        # Desplegable de categorías
+        ctk.CTkLabel(
+            self.popup, text="Categoría:", font=("Helvetica", 16, "bold"),
+            text_color="#F3920F", fg_color="#1C2124"
+        ).grid(row=5, column=0, padx=10, pady=5, sticky="e")
+
+        categoria_dropdown = ctk.CTkOptionMenu(
+            self.popup, variable=self.categoria_var, values=list(self.categorias_dict.keys()),
+            fg_color="#2C353A", text_color="#FFFFFF", dropdown_hover_color="#2C353A"
+        )
+        categoria_dropdown.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+
+        # Mensaje de error/success
+        self.mensaje_label = ctk.CTkLabel(
+            self.popup, text="", font=("Helvetica", 14, "bold"),
+            text_color="#FF0000", fg_color="#1C2124"
+        )
+        self.mensaje_label.grid(row=6, column=0, columnspan=2, pady=10)
+
+        # Botón para aceptar
+        ctk.CTkButton(
+            self.popup, text="Aceptar", command=self.aceptar,
+            border_width=2, fg_color="#1C2124", text_color="#F3920F",
+            font=("Helvetica", 16, "bold"), hover_color="#2C353A",
+            border_color="#F3920F", width=150, height=50
+        ).grid(row=7, column=0, columnspan=2, pady=15)
+
+    # # Enfocar el primer campo al abrir la ventana
+    # self.popup.after(100, lambda: self.popup.focus_force())
+    # self.popup.after(200, lambda: self.nombre_entry.focus())
+        
 
     def eliminar_producto(self):
         # selected_item = self.tree.selection()
@@ -227,4 +376,4 @@ class ProductosApp:
         pass
     
     
-# ProductosApp()
+ProductosApp()
