@@ -5,20 +5,30 @@ class CRUD_producto():
         self.session = Session
 
     def crear_producto(self, nombre, precio, stock, costo, codigo_barra, categoria_id):
-        if self.obtener_producto(nombre) is None:
-            nuevo_producto = Producto(nombre=nombre, precio=precio, stock=stock, costo=costo, codigo_barra=codigo_barra, categoriaID=categoria_id)
-            self.session.add(nuevo_producto)
-            self.session.commit()
-            return nuevo_producto, None
+        if self.obtener_producto_por_nombre(nombre) is None:
+            if self.obtener_producto_por_cb(codigo_barra) is None:
+                nuevo_producto = Producto(nombre=nombre, precio=precio, stock=stock, costo=costo, codigo_barra=codigo_barra, categoriaID=categoria_id)
+                self.session.add(nuevo_producto)
+                self.session.commit()
+                return nuevo_producto, None
+            else:
+               return None, "Ya existe un producto con ese codigo de barra"
         else:
-            return None, "Ese producto ya está registrado"
+            return None, "Ya existe un producto con ese nombre"
 
-    def obtener_producto(self, nombre):
+    def obtener_producto_por_nombre(self, nombre):
         try:
             producto = self.session.query(Producto).filter_by(nombre=nombre).one()
             return producto
         except NoResultFound:
             return None
+        
+    def obtener_producto_por_cb(self, codigo_barra):
+        try:
+            producto = self.session.query(Producto).filter_by(codigo_barra=codigo_barra).one()
+            return producto
+        except NoResultFound:
+            return None    
         
     def obtener_todos_productos(self):
         try:

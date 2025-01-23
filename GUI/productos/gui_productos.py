@@ -159,27 +159,35 @@ class ProductosApp:
         productos = self.crud_producto.obtener_todos_productos()
         for row in self.tree.get_children():
             self.tree.delete(row)
-        datos = []
+        self.datos = []
         
-          # Si no hay productos, mostrar mensaje en la primera fila
+        # Si no hay productos, mostrar mensaje en la primera fila
         if not productos:
             self.tree.insert("", "end", values=("No hay productos cargados", "", "", "", "", "", ""), tags=("empty",))
-            return datos
+            return self.datos
         
         for index, (producto, categoria_nombre) in enumerate(productos):
             tag = "evenrow" if index % 2 == 0 else "oddrow"
             self.tree.insert("", "end", values=(producto.productoID, categoria_nombre, producto.nombre, producto.precio,
                                                 producto.stock, producto.costo, producto.codigo_barra), tags=(tag,))
-            datos.append((producto.productoID, producto.categoriaID, producto.nombre, producto.precio,
-                                                producto.stock, producto.costo, producto.codigo_barra))
-        return datos
-    
+            # Guardar nombre de la categoría en lugar del ID para ordenar correctamente
+            self.datos.append((producto.productoID, categoria_nombre, producto.nombre, producto.precio,
+                            producto.stock, producto.costo, producto.codigo_barra))
+        return self.datos
 
     def ordenar_columna(self, columna):
         col_index = ["ID", "Categoria", "Nombre", "Precio", "Stock", "Costo", "CodBar"].index(columna)
         orden_inverso = getattr(self, "orden_inverso", False)
-        self.datos.sort(key=lambda x: x[col_index], reverse=orden_inverso)
+        
+        # Ordenar por nombre de la categoría si es la columna "Categoria"
+        if columna == "Categoria":
+            self.datos.sort(key=lambda x: x[1], reverse=orden_inverso)
+        else:
+            self.datos.sort(key=lambda x: x[col_index], reverse=orden_inverso)
+        
         self.orden_inverso = not orden_inverso
+        
+        # Limpiar y volver a cargar los datos ordenados
         for row in self.tree.get_children():
             self.tree.delete(row)
         for index, dato in enumerate(self.datos):
@@ -220,6 +228,8 @@ class ProductosApp:
                 self.mensaje_label.configure(text=error, text_color="#FF0000")
                 return
 
+            self.cargar_datos()
+            
             # Mostrar éxito y limpiar campos
             self.mensaje_label.configure(text="Producto creado con éxito", text_color="#00FF00")
             self.nombre_var.set("")
