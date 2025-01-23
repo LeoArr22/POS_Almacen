@@ -142,7 +142,14 @@ class ProductosApp:
 
         # Botones Eliminar Producto
         self.eliminar_producto_button = ctk.CTkButton(self.botones_frame, text="Eliminar Producto", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.eliminar_producto_button.grid(row=2, column=1, padx=20, sticky="e")
+        self.eliminar_producto_button.grid(row=2, column=1, padx=20, sticky="w")
+        
+        # Campos para crear usuario
+        self.categoria_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de categoria", width=200)
+        self.categoria_entry.grid(row=2, column=2, padx=100, pady=5, sticky="w")
+        
+        self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Crear Categoria", command=self.crear_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.crear_categoria_button.grid(row=2, column=2, padx=320, sticky="w")
 
         self.frame_principal.grid_rowconfigure(0, weight=1)
         self.frame_principal.grid_columnconfigure(0, weight=1)
@@ -367,23 +374,32 @@ class ProductosApp:
         
 
     def eliminar_producto(self):
-        # selected_item = self.tree.selection()
-        # if not selected_item:
-        #     self.error_label.configure(text="Por favor, selecciona un usuario.", text_color="#FF0000")
-        #     return
-        # nombre_usuario = self.tree.item(selected_item)["values"][1]
+        selected_item = self.tree.selection()
+        if not selected_item:
+            self.error_label.configure(text="Por favor, selecciona un usuario.", text_color="#FF0000")
+            return
+        nombre_producto = self.tree.item(selected_item)["values"][2]
         
-        # if nombre_usuario.lower() == "admin":
-        #     self.error_label.configure(text="No puede eliminar al usuario administrador.", text_color="#FF0000")
-        #     return
+        try:
+            self.crud_producto.eliminar_producto(nombre_producto)
+            self.datos = self.cargar_datos()
+            self.error_label.configure(text="Producto eliminado con éxito.", text_color="#00FF00")  # Mensaje de éxito
+        except Exception as e:
+            self.error_label.configure(text=f"Error al eliminar el producto: {str(e)}", text_color="#FF0000")
         
-        # try:
-        #     self.crud_usuario.eliminar_usuario(nombre_usuario)
-        #     self.datos = self.cargar_usuarios()
-        #     self.error_label.configure(text="Usuario eliminado con éxito.", text_color="#00FF00")  # Mensaje de éxito
-        # except Exception as e:
-        #     self.error_label.configure(text=f"Error al eliminar el usuario: {str(e)}", text_color="#FF0000")
-        pass
+    def crear_categoria(self):
+        categoria = self.categoria_entry.get()
+        try:
+            modelo_categoria = ModeloCategoria(categoria)
+            resultado, error = self.crud_categoria.crear_categoria(categoria)
+            if error:
+                self.error_label.configure(text=error, text_color="#FF0000")  # Mensaje de error en rojo
+                return
+            self.categoria_entry.delete(0, "end")
+            self.error_label.configure(text="Categoria creada con éxito.", text_color="#00FF00")  # Mensaje de éxito
+        except ValueError as e:
+            self.error_label.configure(text=str(e), text_color="#FF0000")
+        except Exception as e:
+            self.error_label.configure(text=f"Error inesperado: {str(e)}", text_color="#FF0000")    
     
-    
-ProductosApp()
+# ProductosApp()

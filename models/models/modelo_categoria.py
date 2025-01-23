@@ -4,13 +4,7 @@ class ModeloCategoria:
     def __init__(self, nombre=None, descripcion=None):
         self.nombre = nombre
         self.descripcion = descripcion
-        
-    def es_completo(self):
-        atributos_requeridos = ["nombre", "precio", "stock", "costo", "codigo_barra"]
-        for atributo in atributos_requeridos:
-            if getattr(self, atributo) is None:  # Si algún atributo es None
-                return None, f"El campo '{atributo}' está incompleto"  # Retorna el error
-        return True, ""    
+     
         
 #NOMBRE    
     @property #Convertimos el metodo en un getter

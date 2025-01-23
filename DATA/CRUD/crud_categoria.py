@@ -9,7 +9,7 @@ class CRUD_categoria():
             nueva_categoria = Categoria(nombre=nombre)
             self.session.add(nueva_categoria)
             self.session.commit()
-            return nueva_categoria
+            return nueva_categoria, None
         else:
             return None, "Esa categoría ya está registrada"
 

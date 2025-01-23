@@ -1,6 +1,7 @@
 import json
 from data.sql.engine import *
 from data.crud.crud_usuarios import CRUD_usuario
+from data.crud.crud_categoria import CRUD_categoria
 from gui.util.generic import leer_imagen, centrar_ventana
 from gui.master.master import MasterPanel
 
@@ -25,6 +26,9 @@ class LoginApp:
         self.fondo_label = ctk.CTkLabel(self.frame_principal, image=self.fondo, text="")
         self.fondo_label.image = self.fondo  # Retener referencia
         self.fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        # Revisar si la categoria "Sin Categoria" existe, sino la crea
+        
 
         # Revisar si mostrar mensaje inicial
         if  not self.verificar_mensaje_mostrado():

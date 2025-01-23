@@ -7,6 +7,7 @@
 #     verificar_o_crear_vendedor()  # Llamas a la función para verificar o crear un vendedor
 
 from gui.login.login import LoginApp
+from gui.productos.gui_productos import ProductosApp
 
 # from models.models.modelo_producto import ModeloProducto
 # from data.crud.crud_producto import CRUD_producto
@@ -24,6 +25,6 @@ from gui.login.login import LoginApp
 #     print(e)
 
 if __name__ == "__main__":
-    LoginApp()
+    ProductosApp()
     # LoginApp
 
