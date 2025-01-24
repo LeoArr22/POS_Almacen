@@ -22,8 +22,10 @@ class ModeloCategoria:
     #La tupla obtenida puede ser (False, "mensaje de error") o (True, "")
     #"valido" guarda al booleano, "mensaje" al string
     #en caso de ser falso se activa el if y devuelve como mensaje de error al try para su impresion
-            recorre_validadores(validadores, nuevo_nombre)
-            self.__nombre = nuevo_nombre 
+            resultado = recorre_validadores(validadores, nuevo_nombre)
+            if resultado is not None:
+                return resultado    
+        self.__nombre = nuevo_nombre 
 
 #DESCRIPCION
     @property

@@ -134,7 +134,7 @@ class UsuariosApp:
         self.crear_usuario_button = ctk.CTkButton(self.botones_frame, text="Crear Usuario", command=self.crear_usuario, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.crear_usuario_button.grid(row=2, column=0, padx=40, pady=10, sticky="w")
 
-        # Campos para modificar contraseña (solo contraseña, no nombre de usuario)
+        # Campos para modificar contraseña (solo contraseña)
         self.modificar_contrasena_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nueva Contraseña", width=200, show="*")
         self.modificar_contrasena_entry.grid(row=1, column=1, padx=20,  pady=5, sticky="w")
 

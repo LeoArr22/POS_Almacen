@@ -144,12 +144,18 @@ class ProductosApp:
         self.eliminar_producto_button = ctk.CTkButton(self.botones_frame, text="Eliminar Producto", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.eliminar_producto_button.grid(row=2, column=1, padx=20, sticky="w")
         
-        # Campos para crear usuario
+        # Campos para crear categoria
         self.categoria_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de categoria", width=200)
         self.categoria_entry.grid(row=2, column=2, padx=100, pady=5, sticky="w")
         
+        # Boton Crear Categoria
         self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Crear Categoria", command=self.crear_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.crear_categoria_button.grid(row=2, column=2, padx=320, sticky="w")
+        
+        # Boton Modificar Categorias
+        self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Modificar Categorias", command=self.modificar_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.crear_categoria_button.grid(row=2, column=2, padx=500, sticky="w")
+
 
         self.frame_principal.grid_rowconfigure(0, weight=1)
         self.frame_principal.grid_columnconfigure(0, weight=1)
@@ -401,5 +407,133 @@ class ProductosApp:
             self.error_label.configure(text=str(e), text_color="#FF0000")
         except Exception as e:
             self.error_label.configure(text=f"Error inesperado: {str(e)}", text_color="#FF0000")    
+            
+            
+    def modificar_categoria(self):
+        """Abre una ventana emergente para crear un producto."""
+        # Crear ventana emergente
+        self.popup = ctk.CTkToplevel(self.ventana)
+        self.popup.title("Modificar/Eliminar Categorias")
+        self.popup.transient(self.ventana)  # Marcar como ventana hija
+        self.popup.grab_set()  # Bloquear interacción con la ventana principal
+        centrar_ventana(self.popup, 600, 400)  # Centrar la ventana
+
+        # Configurar diseño de la ventana emergente
+        
+        self.popup.configure(bg="#1C2124", fg_color="#1C2124")
+        self.popup.grid_columnconfigure(0, weight=1)
+        self.popup.grid_columnconfigure(1, weight=1)
+        
+        
+        # Estilos del Treeview
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("Treeview",
+                        background="#2C353A",
+                        fieldbackground="#2C353A",
+                        foreground="white",
+                        rowheight=30,
+                        borderwidth=2,
+                        relief="solid")
+        style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 12, 'bold'))
+        style.map("Treeview", background=[('selected', '#F3920F')])
+
+        self.tree = ttk.Treeview(self.popup, columns=("Categoria"), show="headings", style="Treeview")
+        self.tree.heading("Categoria", text="Categoria")
+        self.tree.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
+
+        # Scrollbar
+        self.scrollbar = ctk.CTkScrollbar(self.popup, orientation="vertical", command=self.tree.yview)
+        self.scrollbar.grid(row=1, column=3, sticky="ns")
+        self.tree.configure(yscrollcommand=self.scrollbar.set)
+
+        # Label para mensajes de error
+        self.error_label = ctk.CTkLabel(self.popup, text="", fg_color="#F3920F", font=("Helvetica", 14, "bold"), text_color="white", width=700, height=30)
+        self.error_label.grid(row=2, column=0, columnspan=3, padx=10, pady=5, sticky="ew")
+
+        # Frame para campos y botones
+        self.botones_frame = ctk.CTkFrame(self.popup, height=40, fg_color="#1C2124")
+        self.botones_frame.grid(row=3, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
+        self.botones_frame.grid_rowconfigure(0, weight=1)
+        
+        self.crud_categorias = CRUD_categoria(Session())
+        self.cargar_categorias()
+        
+        # Campo para modificar nombre categoria
+        self.modificar_nombre_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nueva Nombre", width=200)
+        self.modificar_nombre_entry.grid(row=1, column=1, padx=50,  pady=5, sticky="w")
+        
+        # Botón Modificar nombre categoria
+        self.modificar_nombre_button = ctk.CTkButton(self.botones_frame, text="Modificar Categoria", border_width=2, command=self.modificar_nombre, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.modificar_nombre_button.grid(row=2, column=1, padx=80, sticky="w")
+
+        # Boton Eliminar Categoria
+        self.eliminar_categoria_button = ctk.CTkButton(self.botones_frame, text="Eliminar Categoria", border_width=2, command=self.eliminar_categoria, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.eliminar_categoria_button.grid(row=2, column=2, padx=30, sticky="e")
+        
+        
+    def cargar_categorias(self):
+        categorias, error = self.crud_categoria.obtener_categorias()
+        if error:
+            print(error)
+            return []
+
+        # Limpiar el árbol actual
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+            
+        datos = []
+        for _, nombre in categorias:  # Ignorar el ID
+            self.tree.insert("", "end", values=(nombre,))
+            datos.append(nombre)
+        return datos  
     
-# ProductosApp()
+    
+    def modificar_nombre(self):
+        nombre_nuevo = self.modificar_nombre_entry.get()
+        selected_item = self.tree.selection()
+
+        if not selected_item:
+            self.error_label.configure(text="Por favor, selecciona una categoria.", text_color="#FF0000")
+            return
+
+        nombre_categoria = self.tree.item(selected_item)["values"][0]
+
+        if nombre_categoria == "Sin Categoria":
+            self.error_label.configure(text="No puede modificar la categoria auxiliar: Sin Categoria")
+            return
+
+        try:
+            modelo_categoria = ModeloCategoria(nombre_nuevo)
+            resultado, error = self.crud_categoria.actualizar_categoria(nombre_categoria, nombre_nuevo)
+
+            if error:  # Verificar si hay un error
+                self.error_label.configure(text=error, text_color="#FF0000")
+            else:
+                self.modificar_nombre_entry.delete(0, "end")
+                self.cargar_categorias()
+                self.error_label.configure(text="Categoría actualizada con éxito.", text_color="#00FF00")  # Mensaje de éxito
+        except ValueError as e:
+            self.error_label.configure(text=str(e), text_color="#FF0000")
+        except Exception as e:
+            self.error_label.configure(text=f"Error inesperado: {str(e)}", text_color="#FF0000")
+
+    def eliminar_categoria(self):
+        selected_item = self.tree.selection()
+        if not selected_item:
+            self.error_label.configure(text="Por favor, selecciona una categoria.", text_color="#FF0000")
+            return
+        nombre_categoria = self.tree.item(selected_item)["values"][0]
+        
+        if nombre_categoria == "Sin Categoria":
+            self.error_label.configure(text="No puede eliminar la categoria auxiliar: Sin Categoria", text_color="#FF0000")
+            return
+        
+        try:
+            self.crud_categoria.eliminar_categoria(nombre_categoria)
+            self.cargar_categorias()
+            self.error_label.configure(text="Categoria eliminada con éxito.", text_color="#00FF00")  # Mensaje de éxito
+        except Exception as e:
+            self.error_label.configure(text=f"Error al eliminar la categoria: {str(e)}", text_color="#FF0000")
+    
+    # ProductosApp()

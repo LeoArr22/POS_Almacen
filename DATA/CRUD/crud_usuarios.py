@@ -6,7 +6,6 @@ class CRUD_usuario():
         self.session = Session
 
     # Crear usuario
-    
     def crear_usuario(self, usuario, contrasena):
         if self.obtener_usuario(usuario) is None:
             nuevo_usuario = Vendedor(usuario=usuario, contrasena=contrasena)

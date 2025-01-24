@@ -28,7 +28,8 @@ class LoginApp:
         self.fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         # Revisar si la categoria "Sin Categoria" existe, sino la crea
-        
+        crud_categoria=CRUD_categoria(Session())
+        crud_categoria.crear_categoria("Sin Categoria")
 
         # Revisar si mostrar mensaje inicial
         if  not self.verificar_mensaje_mostrado():
