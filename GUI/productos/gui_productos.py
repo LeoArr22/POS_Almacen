@@ -129,7 +129,7 @@ class ProductosApp:
         # Frame para campos y botones
         self.botones_frame = ctk.CTkFrame(self.frame_principal, height=50, fg_color="#1C2124")
         self.botones_frame.grid(row=3, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
-        self.botones_frame.grid_rowconfigure(0, weight=1)
+        self.botones_frame.grid_rowconfigure(5, weight=1)
 
         # CRUD
         self.crud_producto = CRUD_producto(Session())
@@ -138,23 +138,27 @@ class ProductosApp:
 
         # Botón Crear Producto
         self.crear_producto_button = ctk.CTkButton(self.botones_frame, text="Crear Producto", command=self.crear_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.crear_producto_button.grid(row=2, column=0, padx=20, pady=10, sticky="w")
+        self.crear_producto_button.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
 
         # Botones Eliminar Producto
         self.eliminar_producto_button = ctk.CTkButton(self.botones_frame, text="Eliminar Producto", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.eliminar_producto_button.grid(row=2, column=1, padx=20, sticky="w")
+        self.eliminar_producto_button.grid(row=2, column=1, padx=10, sticky="ew")
+
+        # Botones Eliminar Producto
+        self.eliminar_producto_button = ctk.CTkButton(self.botones_frame, text="Eliminar Producto", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.eliminar_producto_button.grid(row=2, column=2, padx=10, sticky="ew")
         
         # Campos para crear categoria
         self.categoria_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de categoria", width=200)
-        self.categoria_entry.grid(row=2, column=2, padx=100, pady=5, sticky="w")
+        self.categoria_entry.grid(row=2, column=3, padx=10, pady=5, sticky="ew")
         
         # Boton Crear Categoria
         self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Crear Categoria", command=self.crear_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.crear_categoria_button.grid(row=2, column=2, padx=320, sticky="w")
+        self.crear_categoria_button.grid(row=2, column=4, padx=10, sticky="ew")
         
         # Boton Modificar Categorias
         self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Modificar Categorias", command=self.modificar_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.crear_categoria_button.grid(row=2, column=2, padx=500, sticky="w")
+        self.crear_categoria_button.grid(row=2, column=5, padx=10, sticky="ew")
 
 
         self.frame_principal.grid_rowconfigure(0, weight=1)
