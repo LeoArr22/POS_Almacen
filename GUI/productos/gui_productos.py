@@ -8,16 +8,18 @@ from models.models.modelo_producto import ModeloProducto
 from models.models.modelo_categoria import ModeloCategoria
 
 class ProductosApp:
+### INIT - CONFIGURACION VENTANA ###
     def __init__(self):
         self.ventana = ctk.CTk()
         self.ventana.title('Listado de Productos')
-        centrar_ventana(self.ventana, 1200, 600)
+        centrar_ventana(self.ventana, 1200, 650)
         self.ventana.resizable(width=0, height=0)
 
         self.ventana.configure(bg="#1C2124")
         self.frame_principal = ctk.CTkFrame(self.ventana, width=850, height=750, fg_color="#1C2124")
         self.frame_principal.place(x=0, y=0, relwidth=1, relheight=1)
-        
+
+### BARRA DE NAVEGACION ###
         self.label_nav = ctk.CTkLabel(
             self.frame_principal,
             text="Menú de Navegación →",
@@ -74,6 +76,7 @@ class ProductosApp:
         )
         self.libro_ventas_button.place(x=475, y=10)
 
+### TITULO ###
         # Label para el título, ajustado más cerca del listado
         self.label_titulo = ctk.CTkLabel(
             self.frame_principal,
@@ -85,6 +88,7 @@ class ProductosApp:
         )
         self.label_titulo.place(x=900, y=10, anchor="n")
 
+### TREEVIEW VENTANA PRINCIPAL ###
         # Estilos del Treeview
         style = ttk.Style()
         style.theme_use("clam")
@@ -117,48 +121,67 @@ class ProductosApp:
         self.tree.column("Costo", width=40, minwidth=40)
         self.tree.column("CodBar", width=100, minwidth=90)
 
-        # Scrollbar
+### SCROLLBAR ###
         self.scrollbar = ctk.CTkScrollbar(self.frame_principal, orientation="vertical", command=self.tree.yview)
         self.scrollbar.grid(row=1, column=3, sticky="ns")
         self.tree.configure(yscrollcommand=self.scrollbar.set)
 
-        # Label para mensajes de error
+### LABEL PARA MENSAJES DE ERROR ###
         self.error_label = ctk.CTkLabel(self.frame_principal, text="", fg_color="#F3920F", font=("Helvetica", 14, "bold"), text_color="white", width=700, height=30)
         self.error_label.grid(row=2, column=0, columnspan=3, padx=10, pady=5, sticky="ew")
 
-        # Frame para campos y botones
+### FRAME PARA CAMPOS Y BOTONES ####
         self.botones_frame = ctk.CTkFrame(self.frame_principal, height=50, fg_color="#1C2124")
         self.botones_frame.grid(row=3, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
         self.botones_frame.grid_rowconfigure(5, weight=1)
+        self.botones_frame.grid_columnconfigure(7, weight=1)
 
-        # CRUD
+
+### CRUD ###
         self.crud_producto = CRUD_producto(Session())
         self.crud_categoria = CRUD_categoria(Session())
         self.cargar_datos()
 
+### BOTONES Y CAMPOS ###
         # Botón Crear Producto
         self.crear_producto_button = ctk.CTkButton(self.botones_frame, text="Crear Producto", command=self.crear_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.crear_producto_button.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
-
-        # Botones Eliminar Producto
-        self.eliminar_producto_button = ctk.CTkButton(self.botones_frame, text="Eliminar Producto", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.eliminar_producto_button.grid(row=2, column=1, padx=10, sticky="ew")
-
-        # Botones Eliminar Producto
-        self.eliminar_producto_button = ctk.CTkButton(self.botones_frame, text="Eliminar Producto", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.eliminar_producto_button.grid(row=2, column=2, padx=10, sticky="ew")
         
+        # Botón Crear Producto
+        self.modificar_producto_button = ctk.CTkButton(self.botones_frame, text="Modificar Producto", command=self.crear_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.modificar_producto_button.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
+
+        # Campos para crear categoria
+        self.categoria_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de categoria", width=200)
+        self.categoria_entry.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
+        
+        # Boton Crear Categoria
+        self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Crear Categoria", command=self.crear_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.crear_categoria_button.grid(row=3, column=1, padx=10, sticky="ew")
+
         # Campos para crear categoria
         self.categoria_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de categoria", width=200)
         self.categoria_entry.grid(row=2, column=3, padx=10, pady=5, sticky="ew")
         
         # Boton Crear Categoria
         self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Crear Categoria", command=self.crear_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.crear_categoria_button.grid(row=2, column=4, padx=10, sticky="ew")
+        self.crear_categoria_button.grid(row=3, column=3, padx=10, sticky="ew")
+
+        # Botones Eliminar Producto
+        self.eliminar_producto_button = ctk.CTkButton(self.botones_frame, text="Eliminar Producto", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.eliminar_producto_button.grid(row=3, column=4, padx=10, sticky="ew")
+        
+        # Campos para crear categoria
+        self.categoria_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de categoria", width=200)
+        self.categoria_entry.grid(row=2, column=5, padx=10, pady=5, sticky="ew")
+        
+        # Boton Crear Categoria
+        self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Crear Categoria", command=self.crear_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.crear_categoria_button.grid(row=3, column=5, padx=10, sticky="ew")
         
         # Boton Modificar Categorias
         self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Modificar Categorias", command=self.modificar_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.crear_categoria_button.grid(row=2, column=5, padx=10, sticky="ew")
+        self.crear_categoria_button.grid(row=3, column=6, padx=10, sticky="ew")
 
 
         self.frame_principal.grid_rowconfigure(0, weight=1)
@@ -166,12 +189,15 @@ class ProductosApp:
 
         self.ventana.mainloop()
 
+                                                            ### METODOS ###
+
+### PROXIMA VENTANA ###
     def proxima(self, nombre):
         if nombre=="Usuarios":
             from gui.usuarios.gui_usuarios import UsuariosApp
             destruir(self.ventana, UsuariosApp)
 
-
+### TREE VIEW METODOS ###
     def cargar_datos(self):
         productos = self.crud_producto.obtener_todos_productos()
         for row in self.tree.get_children():
@@ -420,7 +446,7 @@ class ProductosApp:
         self.popup.title("Modificar/Eliminar Categorias")
         self.popup.transient(self.ventana)  # Marcar como ventana hija
         self.popup.grab_set()  # Bloquear interacción con la ventana principal
-        centrar_ventana(self.popup, 600, 400)  # Centrar la ventana
+        centrar_ventana(self.popup, 600, 450)  # Centrar la ventana
 
         # Configurar diseño de la ventana emergente
         
