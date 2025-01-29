@@ -41,7 +41,7 @@ class CRUD_producto():
          
         
 
-    def actualizar_producto(self, nombre, nuevo_nombre=None, nuevo_precio=None, nuevo_stock=None, nuevo_costo=None):
+    def actualizar_producto(self, nombre, nuevo_nombre=None, nuevo_precio=None, nuevo_stock=None, nuevo_costo=None, nuevo_cb=None, nueva_categoria=None):
         producto = self.obtener_producto_por_nombre(nombre)
         if producto is not None:
             if nuevo_nombre is not None:
@@ -52,8 +52,12 @@ class CRUD_producto():
                 producto.stock = nuevo_stock
             if nuevo_costo is not None:
                 producto.costo = nuevo_costo
+            if nuevo_cb is not None:
+                producto.codigo_barra = nuevo_cb
+            if nueva_categoria is not None:
+                producto.categoriaID = nueva_categoria       
             self.session.commit()
-            return producto
+            return producto, None
         return None, "Producto no encontrado para actualizar"
 
     def eliminar_producto(self, nombre):
