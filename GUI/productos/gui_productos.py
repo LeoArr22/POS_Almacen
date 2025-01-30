@@ -138,8 +138,8 @@ class ProductosApp:
 
 
 ### CRUD ###
-        self.crud_producto = CRUD_producto(Session())
-        self.crud_categoria = CRUD_categoria(Session())
+        self.crud_producto = CRUD_producto(Session)
+        self.crud_categoria = CRUD_categoria(Session)
         self.cargar_datos()
 
 ### BOTONES Y CAMPOS ###
@@ -177,6 +177,10 @@ class ProductosApp:
         # Botones Eliminar Producto
         self.eliminar_producto_button = ctk.CTkButton(self.botones_frame, text="Eliminar Producto", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.eliminar_producto_button.grid(row=3, column=4, padx=10, sticky="ew")
+        
+        # Botones Ver Todos los Producto
+        self.ver_todos_button = ctk.CTkButton(self.botones_frame, text="Ver Todos Los Productos", command=self.cargar_datos, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.ver_todos_button.grid(row=2, column=4, padx=10, sticky="ew")
         
         # Campos para crear categoria
         self.categoria_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de categoria", width=200)
