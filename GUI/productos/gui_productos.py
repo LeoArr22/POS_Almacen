@@ -151,21 +151,28 @@ class ProductosApp:
         self.modificar_producto_button = ctk.CTkButton(self.botones_frame, text="Modificar Producto", command=self.modificar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.modificar_producto_button.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
 
-        # Campos para crear categoria
-        self.categoria_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de categoria", width=200)
-        self.categoria_entry.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
-        
-        # Boton Crear Categoria
-        self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Crear Categoria", command=self.crear_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.crear_categoria_button.grid(row=3, column=1, padx=10, sticky="ew")
+        # Campo y botón para buscar por nombre
+        self.buscar_nombre_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre del producto", width=200)
+        self.buscar_nombre_entry.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
 
-        # Campos para crear categoria
-        self.categoria_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre de categoria", width=200)
-        self.categoria_entry.grid(row=2, column=3, padx=10, pady=5, sticky="ew")
-        
-        # Boton Crear Categoria
-        self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Crear Categoria", command=self.crear_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.crear_categoria_button.grid(row=3, column=3, padx=10, sticky="ew")
+        self.buscar_nombre_button = ctk.CTkButton(
+            self.botones_frame, text="Buscar por Nombre", command=self.buscar_por_nombre,
+            border_width=2, fg_color="#1C2124", text_color="white",
+            font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F"
+        )
+        self.buscar_nombre_button.grid(row=3, column=1, padx=10, sticky="ew")
+
+        # Campo y botón para buscar por código de barra
+        self.buscar_codigo_barra_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Código de Barra", width=200)
+        self.buscar_codigo_barra_entry.grid(row=2, column=3, padx=10, pady=5, sticky="ew")
+
+        self.buscar_cb_button = ctk.CTkButton(
+            self.botones_frame, text="Buscar por Código de Barra", command=self.buscar_por_codigo_barra,
+            border_width=2, fg_color="#1C2124", text_color="white",
+            font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F"
+        )
+        self.buscar_cb_button.grid(row=3, column=3, padx=10, sticky="ew")
+
 
         # Botones Eliminar Producto
         self.eliminar_producto_button = ctk.CTkButton(self.botones_frame, text="Eliminar Producto", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
@@ -209,12 +216,12 @@ class ProductosApp:
             self.tree.insert("", "end", values=("No hay productos cargados", "", "", "", "", "", ""), tags=("empty",))
             return self.datos
         
-        for index, (producto, categoria_nombre) in enumerate(productos):
+        for index, (producto, self.categoria_nombre) in enumerate(productos):
             tag = "evenrow" if index % 2 == 0 else "oddrow"
-            self.tree.insert("", "end", values=(producto.productoID, categoria_nombre, producto.nombre, producto.precio,
-                                                producto.stock, producto.costo, producto.codigo_barra), tags=(tag,))
+            self.tree.insert("", "end", values=(producto.productoID, self.categoria_nombre, producto.nombre, int(producto.precio),
+                                                producto.stock, int(producto.costo), producto.codigo_barra), tags=(tag,))
             # Guardar nombre de la categoría en lugar del ID para ordenar correctamente
-            self.datos.append((producto.productoID, categoria_nombre, producto.nombre, producto.precio,
+            self.datos.append((producto.productoID, self.categoria_nombre, producto.nombre, producto.precio,
                             producto.stock, producto.costo, producto.codigo_barra))
         return self.datos
 
@@ -236,6 +243,52 @@ class ProductosApp:
         for index, dato in enumerate(self.datos):
             tag = "evenrow" if index % 2 == 0 else "oddrow"
             self.tree.insert("", "end", values=dato, tags=(tag,))
+            
+            
+    def buscar_por_nombre(self):
+        """Busca un producto por nombre y lo muestra en el Treeview."""
+        nombre = self.buscar_nombre_entry.get().strip()
+        
+        if not nombre:
+            self.error_label.configure(text="Ingrese un nombre para buscar", text_color="#FF0000")
+            return
+
+        producto, error = self.crud_producto.obtener_producto_por_nombre(nombre)
+        
+        if error:
+            self.error_label.configure(text=error, text_color="#FF0000")
+            return
+        
+        # Limpiar Treeview y mostrar solo el producto encontrado
+        self.tree.delete(*self.tree.get_children())  # Borra los datos actuales
+        self.tree.insert("", "end", values=(
+            producto.productoID, self.categoria_nombre, producto.nombre,
+            int(producto.precio), producto.stock, int(producto.costo),
+            producto.codigo_barra
+        ))
+
+    def buscar_por_codigo_barra(self):
+        """Busca un producto por código de barra y lo muestra en el Treeview."""
+        codigo_barra = self.buscar_codigo_barra_entry.get().strip()
+        
+        if not codigo_barra:
+            self.error_label.configure(text="Ingrese un código de barra para buscar", text_color="#FF0000")
+            return
+
+        producto, error = self.crud_producto.obtener_producto_por_cb(codigo_barra)
+        
+        if error:
+            self.error_label.configure(text=error, text_color="#FF0000")
+            return
+        
+        # Limpiar Treeview y mostrar solo el producto encontrado
+        self.tree.delete(*self.tree.get_children())  
+        self.tree.insert("", "end", values=(
+            producto.productoID, self.categoria_nombre, producto.nombre,
+            int(producto.precio), producto.stock, int(producto.costo),
+            producto.codigo_barra
+        ))
+            
 
     def aceptar(self):
         """Valida y guarda el producto."""
@@ -252,8 +305,8 @@ class ProductosApp:
                 raise ValueError("Faltan campos por completar")
 
             # Obtener el ID de la categoría seleccionada
-            categoria_nombre = self.categoria_var.get()  # Nombre de la categoría seleccionada
-            categoria_id = self.categorias_dict.get(categoria_nombre)  # ID correspondiente
+            self.categoria_nombre = self.categoria_var.get()  # Nombre de la categoría seleccionada
+            categoria_id = self.categorias_dict.get(self.categoria_nombre)  # ID correspondiente
 
             if not categoria_id:
                 raise ValueError("Categoría no válida seleccionada")
@@ -431,16 +484,16 @@ class ProductosApp:
         self.popup_modificar.grid_columnconfigure(1, weight=1)
 
         # Variables de entrada
-        self.nombre_var = ctk.StringVar(value=self.valores[2])
-        self.precio_var = ctk.StringVar(value=self.valores[3])
-        self.stock_var = ctk.StringVar(value=self.valores[4])
-        self.costo_var = ctk.StringVar(value=self.valores[5])
-        self.codigo_barra_var = ctk.StringVar(value=self.valores[6])
-        self.categoria_var = ctk.StringVar(value=self.valores[1])
+        self.nombre_var_mod = ctk.StringVar(value=self.valores[2])
+        self.precio_var_mod = ctk.StringVar(value=self.valores[3])
+        self.stock_var_mod = ctk.StringVar(value=self.valores[4])
+        self.costo_var_mod = ctk.StringVar(value=self.valores[5])
+        self.codigo_barra_var_mod = ctk.StringVar(value=self.valores[6])
+        self.categoria_var_mod = ctk.StringVar(value=self.valores[1])
 
         # Etiquetas y entradas
         labels = ["Nombre:", "Precio:", "Stock:", "Costo:", "Código de Barra:", "Categoría:"]
-        variables = [self.nombre_var, self.precio_var, self.stock_var, self.costo_var, self.codigo_barra_var]
+        variables = [self.nombre_var_mod, self.precio_var_mod, self.stock_var_mod, self.costo_var_mod, self.codigo_barra_var_mod]
 
         for i, (label, var) in enumerate(zip(labels, variables)):
             ctk.CTkLabel(self.popup_modificar, text=label, font=("Helvetica", 16, "bold"),
@@ -463,7 +516,7 @@ class ProductosApp:
         ctk.CTkLabel(self.popup_modificar, text="Categoría:", font=("Helvetica", 16, "bold"),
                     text_color="#F3920F", fg_color="#1C2124").grid(row=5, column=0, padx=10, pady=5, sticky="e")
 
-        categoria_dropdown = ctk.CTkOptionMenu(self.popup_modificar, variable=self.categoria_var, 
+        categoria_dropdown = ctk.CTkOptionMenu(self.popup_modificar, variable=self.categoria_var_mod, 
                                             values=list(self.categorias_dict.keys()),
                                             fg_color="#2C353A", text_color="#FFFFFF", dropdown_hover_color="#2C353A")
         categoria_dropdown.grid(row=5, column=1, padx=10, pady=5, sticky="w")
@@ -484,19 +537,19 @@ class ProductosApp:
         """Valida y guarda el producto."""
         try:
             # Validación de los datos del producto
-            modelo_producto = ModeloProducto(
-                nombre=self.nombre_var.get(),
-                precio=self.precio_var.get(),
-                stock=self.stock_var.get(),
-                costo=self.costo_var.get(),
-                codigo_barra=self.codigo_barra_var.get(),
+            modelo_producto_mod = ModeloProducto(
+                nombre=self.nombre_var_mod.get(),
+                precio=self.precio_var_mod.get(),
+                stock=self.stock_var_mod.get(),
+                costo=self.costo_var_mod.get(),
+                codigo_barra=self.codigo_barra_var_mod.get(),
             )
-            if not modelo_producto.es_completo():
+            if not modelo_producto_mod.es_completo():
                 raise ValueError("Faltan campos por completar")
 
             # Obtener el ID de la categoría seleccionada
-            categoria_nombre = self.categoria_var.get()  # Nombre de la categoría seleccionada
-            categoria_id = self.categorias_dict.get(categoria_nombre)  # ID correspondiente
+            self.categoria_nombre = self.categoria_var_mod.get()  # Nombre de la categoría seleccionada
+            categoria_id = self.categorias_dict.get(self.categoria_nombre)  # ID correspondiente
 
             if not categoria_id:
                 raise ValueError("Categoría no válida seleccionada")
@@ -504,11 +557,11 @@ class ProductosApp:
             # Crear producto en la base de datos
             resultado, error = self.crud_producto.actualizar_producto(
                 self.valores[2],
-                modelo_producto.nombre,
-                modelo_producto.precio,
-                modelo_producto.stock,
-                modelo_producto.costo,
-                modelo_producto.codigo_barra,
+                modelo_producto_mod.nombre,
+                modelo_producto_mod.precio,
+                modelo_producto_mod.stock,
+                modelo_producto_mod.costo,
+                modelo_producto_mod.codigo_barra,
                 categoria_id
             )
             if error:
@@ -517,15 +570,8 @@ class ProductosApp:
 
             self.cargar_datos()
             
-            # Mostrar éxito y limpiar campos
-            self.mensaje_label.configure(text="Producto creado con éxito", text_color="#00FF00")
-            self.nombre_var.set("")
-            self.precio_var.set("")
-            self.stock_var.set("")
-            self.costo_var.set("")
-            self.codigo_barra_var.set("")
-            self.categoria_var.set("")
-            self.nombre_entry.focus()
+            # Mostrar éxito 
+            self.mensaje_label.configure(text="Producto modificado con éxito", text_color="#00FF00")
 
         except ValueError as ve:
             # Errores de validación controlados

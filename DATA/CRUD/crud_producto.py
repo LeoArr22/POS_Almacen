@@ -1,12 +1,15 @@
 from data.sql.engine import *
+from sqlalchemy import func  # Importar funciones SQLAlchemy
 
 class CRUD_producto():
     def __init__(self, Session):
         self.session = Session
 
     def crear_producto(self, nombre, precio, stock, costo, codigo_barra, categoria_id):
-        if self.obtener_producto_por_nombre(nombre) is None:
-            if self.obtener_producto_por_cb(codigo_barra) is None:
+        producto_nom, error = self.obtener_producto_por_nombre(nombre)
+        if producto_nom is None:
+            producto_cb, error = self.obtener_producto_por_cb(codigo_barra)
+            if producto_cb is None:
                 nuevo_producto = Producto(nombre=nombre, precio=precio, stock=stock, costo=costo, codigo_barra=codigo_barra, categoriaID=categoria_id)
                 self.session.add(nuevo_producto)
                 self.session.commit()
@@ -16,19 +19,21 @@ class CRUD_producto():
         else:
             return None, "Ya existe un producto con ese nombre"
 
+
     def obtener_producto_por_nombre(self, nombre):
         try:
-            producto = self.session.query(Producto).filter_by(nombre=nombre).one()
-            return producto
+            producto = self.session.query(Producto).filter(func.lower(Producto.nombre) == nombre.lower()).one()
+            return producto, ""
         except NoResultFound:
-            return None
-        
+            return None, "No se encontró ningún producto con ese nombre"
+
     def obtener_producto_por_cb(self, codigo_barra):
         try:
             producto = self.session.query(Producto).filter_by(codigo_barra=codigo_barra).one()
-            return producto
+            return producto, ""
         except NoResultFound:
-            return None    
+            return None, "No se encontró ningún producto con ese código de barra"
+
         
     def obtener_todos_productos(self):
         try:
@@ -42,7 +47,7 @@ class CRUD_producto():
         
 
     def actualizar_producto(self, nombre, nuevo_nombre=None, nuevo_precio=None, nuevo_stock=None, nuevo_costo=None, nuevo_cb=None, nueva_categoria=None):
-        producto = self.obtener_producto_por_nombre(nombre)
+        producto, error = self.obtener_producto_por_nombre(nombre)
         if producto is not None:
             if nuevo_nombre is not None:
                 producto.nombre = nuevo_nombre
@@ -58,7 +63,7 @@ class CRUD_producto():
                 producto.categoriaID = nueva_categoria       
             self.session.commit()
             return producto, None
-        return None, "Producto no encontrado para actualizar"
+        return None, error
 
     def eliminar_producto(self, nombre):
         producto = self.obtener_producto_por_nombre(nombre)
