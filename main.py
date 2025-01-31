@@ -8,6 +8,7 @@
 
 from gui.login.login import LoginApp
 from gui.productos.gui_productos import ProductosApp
+from gui.vender.gui_vender import DetallesApp
 
 # from models.models.modelo_producto import ModeloProducto
 # from data.crud.crud_producto import CRUD_producto
@@ -25,6 +26,6 @@ from gui.productos.gui_productos import ProductosApp
 #     print(e)
 
 if __name__ == "__main__":
-    ProductosApp()
+    DetallesApp()
     # LoginApp
 

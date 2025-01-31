@@ -67,7 +67,7 @@ class CRUD_producto():
             producto, error = self.obtener_producto_por_nombre(nombre, session)
             existe, error = self.obtener_producto_por_nombre(nuevo_nombre, session)
             if producto is not None:
-                if existe is None:
+                if existe is None or nuevo_nombre==producto.nombre:
                     if nuevo_nombre is not None:
                         producto.nombre = nuevo_nombre
                     if nuevo_precio is not None:

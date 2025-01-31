@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, Date
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base
 from sqlalchemy.exc import NoResultFound
 
@@ -37,7 +37,7 @@ class Detalle(Base):
     productoID = Column(Integer, ForeignKey('Producto.productoID'), primary_key=True)
     ventaID = Column(Integer, ForeignKey('Venta.ventaID'), primary_key=True)
     cantidad = Column(Integer)
-    total_prod = Column(Float)
+    total_prod = Column(Integer)
     
     # Relaciones
     producto = relationship("Producto", back_populates="detalle")
@@ -47,7 +47,7 @@ class Venta(Base):
     __tablename__ = 'Venta'
     ventaID = Column(Integer, primary_key=True, autoincrement=True)
     fecha = Column(Date)
-    total_venta = Column(Float)
+    total_venta = Column(Integer)
     vendedorID = Column(Integer, ForeignKey('Vendedor.vendedorID'))
     
     # Relación con Detalle
