@@ -6,9 +6,10 @@ from gui.util.generic import centrar_ventana, destruir
 from models.models.modelo_producto import ModeloProducto
 
 class DetallesApp:
+   ### INIT - CONFIGURACION VENTANA ###
     def __init__(self):
         self.ventana = ctk.CTk()
-        self.ventana.title('Gestor de Detalles de Venta')
+        self.ventana.title('Listado de Productos')
         centrar_ventana(self.ventana, 1200, 650)
         self.ventana.resizable(width=0, height=0)
 
@@ -16,109 +17,179 @@ class DetallesApp:
         self.frame_principal = ctk.CTkFrame(self.ventana, width=850, height=750, fg_color="#1C2124")
         self.frame_principal.place(x=0, y=0, relwidth=1, relheight=1)
 
-        # Treeview que ocupa toda la pantalla
+        self.frame_principal.grid_columnconfigure(0, weight=1)
+        self.frame_principal.grid_rowconfigure(0, weight=1)  # Barra de navegación
+        self.frame_principal.grid_rowconfigure(1, weight=0)
+        self.frame_principal.grid_rowconfigure(2, weight=0)  # Label de error
+
+### BARRA DE NAVEGACION ###
+        self.label_nav = ctk.CTkLabel(
+            self.frame_principal,
+            text="Menú de Navegación →",
+            fg_color="#1C2124",
+            font=("Helvetica", 20, "bold"),  # Tamaño del texto reducido para mayor ajuste
+            text_color="#F3920F",
+            height=40,
+        )
+        self.label_nav.place(x=10, y=10)
+
+        # Botones superiores para navegación
+        self.vender_button = ctk.CTkButton(
+            self.frame_principal,
+            text="Vender",
+            command=lambda: self.ir_a("vender"),
+            border_width=2,
+            fg_color="#1C2124",
+            text_color="#F3920F",
+            font=("Helvetica", 16, "bold"),
+            hover_color="#2C353A",
+            border_color="#F3920F",
+            width=40,
+            height=40
+        )
+        self.vender_button.place(x=250, y=10)
+
+        self.productos_button = ctk.CTkButton(
+            self.frame_principal,
+            text="Usuarios",
+            command=lambda: self.proxima("Usuarios"),
+            border_width=2,
+            fg_color="#1C2124",
+            text_color="#F3920F",
+            font=("Helvetica", 16, "bold"),
+            hover_color="#2C353A",
+            border_color="#F3920F",
+            width=40,
+            height=40
+        )
+        self.productos_button.place(x=350, y=10)
+
+        self.libro_ventas_button = ctk.CTkButton(
+            self.frame_principal,
+            text="Libro de Ventas",
+            command=lambda: self.ir_a("libro_ventas"),
+            border_width=2,
+            fg_color="#1C2124",
+            text_color="#F3920F",
+            font=("Helvetica", 16, "bold"),
+            hover_color="#2C353A",
+            border_color="#F3920F",
+            width=40,
+            height=40
+        )
+        self.libro_ventas_button.place(x=475, y=10)
+
+### TITULO ###
+        # Label para el título, ajustado más cerca del listado
+        self.label_titulo = ctk.CTkLabel(
+            self.frame_principal,
+            text="Gestor de Productos y Categorias",
+            fg_color="#1C2124",
+            font=("Helvetica", 30, "bold"),  # Tamaño del texto reducido para mayor ajuste
+            text_color="#F3920F",
+            height=40,
+        )
+        self.label_titulo.place(x=900, y=10, anchor="n")
+
+### TREEVIEW VENTANA PRINCIPAL ###
+        # Estilos del Treeview
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("Treeview", background="#2C353A", fieldbackground="#2C353A", foreground="white", rowheight=25, borderwidth=2, font=("Roboto", 14), relief="solid")
+        style.configure("Treeview",
+                        background="#2C353A",
+                        fieldbackground="#2C353A",
+                        foreground="white",
+                        rowheight=15,
+                        borderwidth=2,
+                        font=("Roboto", 14),
+                        relief="solid")
         style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 20, 'bold'))
         style.map("Treeview", background=[('selected', '#F3920F')])
 
-        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Nombre", "Precio", "Cantidad", "Total"), show="headings", style="Treeview", height=15)
-        self.tree.heading("ID", text="ID")
-        self.tree.heading("Nombre", text="Nombre")
-        self.tree.heading("Precio", text="Precio")
-        self.tree.heading("Cantidad", text="Cantidad")
-        self.tree.heading("Total", text="Total")
-        self.tree.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
-
-        self.tree.column("ID", anchor="center", width=50, minwidth=50)
+        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Categoria", "Nombre", "Precio", "Stock", "Costo", "CodBar"), show="headings", style="Treeview", height=15)
+        self.tree.heading("ID", text="ID", command=lambda: self.ordenar_columna("ID"))
+        self.tree.heading("Categoria", text="Categoria", command=lambda: self.ordenar_columna("Categoria"))
+        self.tree.heading("Nombre", text="Nombre", command=lambda: self.ordenar_columna("Nombre"))
+        self.tree.heading("Precio", text="Precio", command=lambda: self.ordenar_columna("Precio"))
+        self.tree.heading("Stock", text="Stock", command=lambda: self.ordenar_columna("Stock"))
+        self.tree.heading("Costo", text="Costo", command=lambda: self.ordenar_columna("Costo"))
+        self.tree.heading("CodBar", text="CodBar", command=lambda: self.ordenar_columna("CodBar"))
+        self.tree.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=0)
+        
+        self.tree.column("ID", anchor="center", width=25, minwidth=25)  # Columna "ID" más pequeña
+        self.tree.column("Categoria", width=120, minwidth=100)  # Columna "Categoria" más ancha
         self.tree.column("Nombre", width=150, minwidth=100)
-        self.tree.column("Precio", width=100, minwidth=100)
-        self.tree.column("Cantidad", width=80, minwidth=60)
-        self.tree.column("Total", width=100, minwidth=100)
+        self.tree.column("Precio", width=40, minwidth=40)
+        self.tree.column("Stock", width=40, minwidth=40)
+        self.tree.column("Costo", width=40, minwidth=40)
+        self.tree.column("CodBar", width=100, minwidth=90)
 
+### SCROLLBAR ###
         self.scrollbar = ctk.CTkScrollbar(self.frame_principal, orientation="vertical", command=self.tree.yview)
         self.scrollbar.grid(row=1, column=3, sticky="ns")
         self.tree.configure(yscrollcommand=self.scrollbar.set)
 
-        # Campo de entrada para el código de barras
-        self.codigo_barra_entry = ctk.CTkEntry(self.frame_principal, placeholder_text="Código de Barra", width=200)
-        self.codigo_barra_entry.grid(row=2, column=0, padx=10, pady=5, sticky="ew")
-
-        # Mensaje de error
+### LABEL PARA MENSAJES DE ERROR ###
         self.error_label = ctk.CTkLabel(self.frame_principal, text="", fg_color="#F3920F", font=("Helvetica", 14, "bold"), text_color="white", width=700, height=30)
-        self.error_label.grid(row=2, column=1, columnspan=3, padx=10, pady=5, sticky="ew")
+        self.error_label.grid(row=2, column=0, columnspan=3, padx=10, pady=0, sticky="ew")
 
-        # Total de la venta
-        self.total_label = ctk.CTkLabel(self.frame_principal, text="Total: $0.00", fg_color="#1C2124", font=("Helvetica", 20, "bold"), text_color="#F3920F")
-        self.total_label.grid(row=3, column=0, columnspan=3, pady=20)
 
+
+### CRUD ###
         self.crud_producto = CRUD_producto(Session)
-        self.cargar_datos()
 
-        self.codigo_barra_entry.bind("<KeyRelease>", self.on_codigo_barra_change)
-
-        # Evento para modificar la cantidad
-        self.tree.bind('<Double-1>', self.on_treeview_item_edit)
-        
         self.ventana.mainloop()
+
 
     def on_codigo_barra_change(self, event):
         codigo_barra = self.codigo_barra_entry.get()
-
-        # Solo procesar si el código de barra tiene 13 dígitos
         if len(codigo_barra) == 13:
             producto, error = self.crud_producto.obtener_producto_por_cb(codigo_barra)
-
             if producto:
                 self.cargar_producto_en_treeview(producto)
-                self.codigo_barra_entry.delete(0, 'end')  # Limpiar entrada para el siguiente código de barra
+                self.codigo_barra_entry.delete(0, 'end')
                 self.error_label.configure(text="")
             else:
                 self.error_label.configure(text="Producto no encontrado. Intenta de nuevo.")
 
     def cargar_producto_en_treeview(self, producto):
-        # Comprobar si el producto ya está cargado
         item_existente = None
         for item in self.tree.get_children():
-            if self.tree.item(item)["values"][0] == producto.productoID:  # Compara el ID del producto
+            if self.tree.item(item)["values"][0] == producto.productoID:
                 item_existente = item
                 break
 
         if item_existente:
-            # Si el producto ya está, aumentar la cantidad y actualizar el total
             cantidad_actual = int(self.tree.item(item_existente)["values"][3])
             nuevo_total = producto.precio * (cantidad_actual + 1)
-            self.tree.item(item_existente, values=(producto.productoID, producto.nombre, producto.precio, cantidad_actual + 1, nuevo_total))
+            self.tree.item(item_existente, values=(producto.productoID, producto.nombre, 
+                                                   producto.precio, cantidad_actual + 1, nuevo_total))
         else:
-            # Si el producto no está, agregarlo
-            total_prod = producto.precio  # Inicializamos la cantidad en 1
-            self.tree.insert("", "end", values=(producto.productoID, producto.nombre, producto.precio, 1, total_prod))
+            total_prod = producto.precio
+            self.tree.insert("", "end", values=(producto.productoID, producto.nombre, 
+                                                 producto.precio, 1, total_prod))
 
         self.actualizar_total_venta()
 
     def on_treeview_item_edit(self, event):
-        item_id = self.tree.identify_row(event.y)  # Obtener el item que se ha clickeado
-        col = self.tree.identify_column(event.x)  # Obtener la columna que se ha clickeado
-        if col == '#4':  # Columna de la cantidad
+        item_id = self.tree.identify_row(event.y)
+        col = self.tree.identify_column(event.x)
+        if col == '#4':
             old_value = self.tree.item(item_id)["values"][3]
             new_value = self.prompt_for_quantity(old_value)
             if new_value:
                 producto_id = self.tree.item(item_id)["values"][0]
                 producto, error = self.crud_producto.obtener_producto_por_id(producto_id)
                 if producto:
-                    stock_disponible = producto.stock
-                    if new_value <= stock_disponible:
+                    if new_value <= producto.stock:
                         new_total = producto.precio * new_value
-                        self.tree.item(item_id, values=(producto.productoID, producto.nombre, producto.precio, new_value, new_total))
+                        self.tree.item(item_id, values=(producto.productoID, producto.nombre, 
+                                                         producto.precio, new_value, new_total))
                         self.actualizar_total_venta()
                     else:
-                        self.error_label.configure(text=f"Cantidad excede el stock disponible ({stock_disponible})")
-                else:
-                    self.error_label.configure(text="Producto no encontrado.")
-                
+                        self.error_label.configure(text=f"Cantidad excede el stock disponible ({producto.stock})")
+
     def prompt_for_quantity(self, current_quantity):
-        """Muestra una ventana emergente para editar la cantidad."""
         top = ctk.CTkToplevel(self.ventana)
         top.title("Modificar Cantidad")
         top.geometry("300x150")
@@ -136,17 +207,12 @@ class DetallesApp:
             top.destroy()
             return new_quantity
 
-        confirm_button = ctk.CTkButton(top, text="Confirmar", command=on_confirm)
-        confirm_button.pack(pady=10)
-
+        ctk.CTkButton(top, text="Confirmar", command=on_confirm).pack(pady=10)
         top.mainloop()
-    
+
     def actualizar_total_venta(self):
-        total = 0
-        for item in self.tree.get_children():
-            total += float(self.tree.item(item)["values"][4])  # Total está en la 5ta columna
+        total = sum(float(self.tree.item(item)["values"][4]) for item in self.tree.get_children())
         self.total_label.configure(text=f"Total: ${total:.2f}")
 
     def cargar_datos(self):
-        # Aquí puedes cargar todos los productos si es necesario
         pass
