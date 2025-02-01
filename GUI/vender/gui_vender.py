@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import tkinter as tk
 from tkinter import ttk
 from data.sql.engine import Session
 from data.crud.crud_producto import CRUD_producto
@@ -19,8 +20,10 @@ class DetallesApp:
 
         self.frame_principal.grid_columnconfigure(0, weight=1)
         self.frame_principal.grid_rowconfigure(0, weight=1)  # Barra de navegación
-        self.frame_principal.grid_rowconfigure(1, weight=0)
-        self.frame_principal.grid_rowconfigure(2, weight=0)  # Label de error
+        self.frame_principal.grid_rowconfigure(1, weight=2)  # Treeview 
+        self.frame_principal.grid_rowconfigure(2, weight=1)  # Label de error
+        self.frame_principal.grid_rowconfigure(3, weight=1)  # Botones/campos busqueda productos
+        self.frame_principal.grid_rowconfigure(4, weight=1)  # Total y boton finalizar
 
 ### BARRA DE NAVEGACION ###
         self.label_nav = ctk.CTkLabel(
@@ -36,7 +39,7 @@ class DetallesApp:
         # Botones superiores para navegación
         self.vender_button = ctk.CTkButton(
             self.frame_principal,
-            text="Vender",
+            text="Productos",
             command=lambda: self.ir_a("vender"),
             border_width=2,
             fg_color="#1C2124",
@@ -62,7 +65,7 @@ class DetallesApp:
             width=40,
             height=40
         )
-        self.productos_button.place(x=350, y=10)
+        self.productos_button.place(x=367, y=10)
 
         self.libro_ventas_button = ctk.CTkButton(
             self.frame_principal,
@@ -83,7 +86,7 @@ class DetallesApp:
         # Label para el título, ajustado más cerca del listado
         self.label_titulo = ctk.CTkLabel(
             self.frame_principal,
-            text="Gestor de Productos y Categorias",
+            text="Vender",
             fg_color="#1C2124",
             font=("Helvetica", 30, "bold"),  # Tamaño del texto reducido para mayor ajuste
             text_color="#F3920F",
@@ -106,23 +109,27 @@ class DetallesApp:
         style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 20, 'bold'))
         style.map("Treeview", background=[('selected', '#F3920F')])
 
-        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Categoria", "Nombre", "Precio", "Stock", "Costo", "CodBar"), show="headings", style="Treeview", height=15)
-        self.tree.heading("ID", text="ID", command=lambda: self.ordenar_columna("ID"))
-        self.tree.heading("Categoria", text="Categoria", command=lambda: self.ordenar_columna("Categoria"))
-        self.tree.heading("Nombre", text="Nombre", command=lambda: self.ordenar_columna("Nombre"))
-        self.tree.heading("Precio", text="Precio", command=lambda: self.ordenar_columna("Precio"))
-        self.tree.heading("Stock", text="Stock", command=lambda: self.ordenar_columna("Stock"))
-        self.tree.heading("Costo", text="Costo", command=lambda: self.ordenar_columna("Costo"))
-        self.tree.heading("CodBar", text="CodBar", command=lambda: self.ordenar_columna("CodBar"))
+        self.tree = ttk.Treeview(self.frame_principal, columns=("VentaID", "ProdID", "Nombre", "Categoria", "Stock", "Cant","Precio","PrecioxCantidad"), show="headings", style="Treeview", height=15)
+        self.tree.heading("VentaID", text="VentaID")
+        self.tree.heading("ProdID", text="ProdID")
+        self.tree.heading("Categoria", text="Categoria",)
+        self.tree.heading("Nombre", text="Nombre",)
+        self.tree.heading("Stock", text="Stock")
+        self.tree.heading("Cant", text="Cant")
+        self.tree.heading("Precio", text="Precio")
+        self.tree.heading("PrecioxCantidad", text="PrecioxCantidad")
+
         self.tree.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=0)
         
-        self.tree.column("ID", anchor="center", width=25, minwidth=25)  # Columna "ID" más pequeña
-        self.tree.column("Categoria", width=120, minwidth=100)  # Columna "Categoria" más ancha
-        self.tree.column("Nombre", width=150, minwidth=100)
-        self.tree.column("Precio", width=40, minwidth=40)
-        self.tree.column("Stock", width=40, minwidth=40)
-        self.tree.column("Costo", width=40, minwidth=40)
-        self.tree.column("CodBar", width=100, minwidth=90)
+        self.tree.column("VentaID", anchor="center", width=150, minwidth=150, stretch=False)
+        self.tree.column("ProdID", width=150, minwidth=150)
+        self.tree.column("Categoria", width=370, minwidth=370)
+        self.tree.column("Nombre", width=370, minwidth=370)
+        self.tree.column("Stock", width=150, minwidth=150)
+        self.tree.column("Cant", width=150, minwidth=150)
+        self.tree.column("Precio", width=150, minwidth=150)
+        self.tree.column("PrecioxCantidad", width=270, minwidth=270)
+
 
 ### SCROLLBAR ###
         self.scrollbar = ctk.CTkScrollbar(self.frame_principal, orientation="vertical", command=self.tree.yview)
@@ -139,7 +146,6 @@ class DetallesApp:
         self.crud_producto = CRUD_producto(Session)
 
         self.ventana.mainloop()
-
 
     def on_codigo_barra_change(self, event):
         codigo_barra = self.codigo_barra_entry.get()
