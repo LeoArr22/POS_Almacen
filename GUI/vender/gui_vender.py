@@ -85,7 +85,7 @@ class DetallesApp:
         # Label para el título, ajustado más cerca del listado
         self.label_titulo = ctk.CTkLabel(
             self.frame_principal,
-            text="Gestor de Ventas",
+            text="Gestor de Ventas\nUsuario Logeado: Pepito",
             fg_color="#1C2124",
             font=("Helvetica", 30, "bold"),  # Tamaño del texto reducido para mayor ajuste
             text_color="#F3920F",
@@ -158,6 +158,10 @@ class DetallesApp:
         self.nombre_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre", width=150)
         self.nombre_entry.grid(row=1, column=1, padx=5, sticky="ew")
         
+        # Boton Busqueda por Nombre
+        self.boton_busqueda_por_nombre = ctk.CTkButton(self.botones_frame, text="Buscar por Nombre", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.boton_busqueda_por_nombre.grid(row=2, column=1, padx=5, pady=5)
+        
         # Label de entrada de ID
         self.label_id = ctk.CTkLabel(self.botones_frame, text="Por Identificador", fg_color="#1C2124", font=("Helvetica", 17, "bold"), text_color="#F3920F")
         self.label_id.grid(row=0, column=2, sticky="ew")
@@ -166,36 +170,47 @@ class DetallesApp:
         self.id_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="ID", width=150)
         self.id_entry.grid(row=1, column=2, padx=5, sticky="ew")
         
+        # Boton Busqueda por ID
+        self.boton_busqueda_por_id = ctk.CTkButton(self.botones_frame, text="Buscar por ID", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.boton_busqueda_por_id.grid(row=2, column=2, padx=5, pady=5)
+        
         # Label de cantidad
         self.label_cantidad = ctk.CTkLabel(self.botones_frame, text="Cambiar Cantidad", fg_color="#1C2124", font=("Helvetica", 17, "bold"), text_color="#F3920F")
         self.label_cantidad.grid(row=0, column=3, sticky="ew")
         
+        # Campo de entrada cantidad
         self.cantidad_entry = ctk.CTkEntry(self.botones_frame, width=150, placeholder_text="Cantidad")
         self.cantidad_entry.grid(row=1, column=3, padx=10)
 
-        boton_modificar = ctk.CTkButton(self.botones_frame, text="Modificar Cantidad", command=self.modificar_cantidad, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        boton_modificar.grid(row=2, column=3, padx=10, pady=5)
+        # Boton confirmar
+        self.boton_modificar = ctk.CTkButton(self.botones_frame, text="Modificar Cantidad", command=self.modificar_cantidad, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.boton_modificar.grid(row=2, column=3, padx=10, pady=5)
         
-        # Usuario actual
-        self.usuario_actual_label = ctk.CTkLabel(self.botones_frame, text="Usuario Logeado:", fg_color="#1C2124", font=("Helvetica", 20, "bold"), text_color="#F3920F")
-        self.usuario_actual_label.grid(row=1, column=4, padx=10)
+        # Label de eliminar producto
+        self.label_eliminar = ctk.CTkLabel(self.botones_frame, text="Eliminar Producto", fg_color="#1C2124", font=("Helvetica", 17, "bold"), text_color="#F3920F")
+        self.label_eliminar.grid(row=1, column=4, sticky="ew")
         
-        # Usuario actual
-        self.nombre_actual_label = ctk.CTkLabel(self.botones_frame, text="Pepito", fg_color="#1C2124", font=("Helvetica", 20, "bold"), text_color="#F3920F")
-        self.nombre_actual_label.grid(row=2, column=4, padx=10)
+        # Boton eliminar producto
+        self.boton_eliminar = ctk.CTkButton(self.botones_frame, text="Eliminar", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.boton_eliminar.grid(row=2, column=4, padx=30, pady=5)
         
         # Total de la venta
         self.total_label = ctk.CTkLabel(self.botones_frame, text="Total: $0", fg_color="#1C2124", font=("Helvetica", 30, "bold"), text_color="#F3920F")
-        self.total_label.grid(row=1, column=5, padx=40)
+        self.total_label.grid(row=0, column=5, padx=40)
+        
+        # Boton finalizar venta
+        self.boton_eliminar = ctk.CTkButton(self.botones_frame, text="Finalizar Venta", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.boton_eliminar.grid(row=2, column=5, padx=40, pady=5)
 
         self.crud_producto = CRUD_producto(Session)
         self.cargar_datos()
 
-        self.codigo_barra_entry.bind("<KeyRelease>", self.on_codigo_barra_change)
+        self.codigo_barra_entry.bind("<KeyRelease>", self.buscar_por_codigo_de_barra)
     
         self.ventana.mainloop()
-
-    def on_codigo_barra_change(self, event):
+        
+    #CARGAR POR CODIGO DE BARRA
+    def buscar_por_codigo_de_barra(self, event):
         codigo_barra = self.codigo_barra_entry.get()
 
         # Solo procesar si el código de barra tiene 13 dígitos
@@ -208,6 +223,21 @@ class DetallesApp:
                 self.error_label.configure(text="")
             else:
                 self.error_label.configure(text="Producto no encontrado. Intenta de nuevo.")
+
+    def buscar_por_nombre(self):
+        """Busca un producto por nombre y lo muestra en el Treeview."""
+        nombre = self.nombre_entry.get().strip()
+        
+        if not nombre:
+            self.error_label.configure(text="Ingrese un nombre para buscar", text_color="#FF0000")
+            return
+
+        producto, error = self.crud_producto.obtener_producto_por_nombre(nombre)
+        
+        if error:
+            self.error_label.configure(text=error, text_color="#FF0000")
+            return
+
 
     def cargar_producto_en_treeview(self, producto):
         # Comprobar si el producto ya está en la lista
