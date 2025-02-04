@@ -36,6 +36,23 @@ class CRUD_producto():
         finally:
             if close_session:
                 session.close()
+                
+    def obtener_productos_por_nombre(self, nombre, session=None):
+        close_session = False
+        if session is None:
+            session = self.Session()
+            close_session = True
+        try:
+            productos = session.query(Producto).filter(Producto.nombre.ilike(f"%{nombre}%")).all()
+            
+            if not productos:
+                return None, "No se encontró ningún producto con ese nombre"
+            
+            return productos, ""
+        
+        finally:
+            if close_session:
+                session.close()            
 
     def obtener_producto_por_cb(self, codigo_barra, session=None):
         close_session = False

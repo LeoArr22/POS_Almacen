@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import tkinter as tk
 from tkinter import ttk
 from data.sql.engine import Session
 from data.crud.crud_producto import CRUD_producto
@@ -159,7 +160,7 @@ class DetallesApp:
         self.nombre_entry.grid(row=1, column=1, padx=5, sticky="ew")
         
         # Boton Busqueda por Nombre
-        self.boton_busqueda_por_nombre = ctk.CTkButton(self.botones_frame, text="Buscar por Nombre", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.boton_busqueda_por_nombre = ctk.CTkButton(self.botones_frame, text="Buscar por Nombre", command= self.buscar_por_nombre, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.boton_busqueda_por_nombre.grid(row=2, column=1, padx=5, pady=5)
         
         # Label de entrada de ID
@@ -224,19 +225,70 @@ class DetallesApp:
             else:
                 self.error_label.configure(text="Producto no encontrado. Intenta de nuevo.")
 
+    # BUSCAR Y CARGAR POR NOMBRE
     def buscar_por_nombre(self):
-        """Busca un producto por nombre y lo muestra en el Treeview."""
+        """Busca un producto por nombre y muestra los resultados en un popup."""
         nombre = self.nombre_entry.get().strip()
-        
+
         if not nombre:
             self.error_label.configure(text="Ingrese un nombre para buscar", text_color="#FF0000")
             return
 
-        producto, error = self.crud_producto.obtener_producto_por_nombre(nombre)
-        
-        if error:
+        productos, error = self.crud_producto.obtener_productos_por_nombre(nombre)
+
+        if not productos:
             self.error_label.configure(text=error, text_color="#FF0000")
             return
+
+        popup = ctk.CTkToplevel(self.ventana)
+        popup.title("Seleccionar Producto")
+        centrar_ventana(popup, 600, 400)
+        popup.grab_set()
+        popup.configure(bg="#1C2124", fg_color="#1C2124")
+
+        # Etiqueta de instrucciones
+        label = ctk.CTkLabel(popup, text="Seleccione un producto:", fg_color="#1C2124", text_color="white")
+        label.pack(pady=10)
+
+        # Crear un Listbox 
+        listbox = tk.Listbox(
+            popup, 
+            height=8, 
+            bg="#1C2124", 
+            fg="white",
+            selectbackground="#F3920F",
+            font=("Arial", 20),
+            activestyle="none"  
+        )
+        listbox.pack(pady=10, padx=10, fill="both", expand=True)
+
+        # Llenar el Listbox con los productos
+        for producto in productos:
+            nombre = f"Nombre: {producto.nombre}".ljust(30)  # Ajusta el espacio según la longitud
+            precio = f"Precio: ${producto.precio}".rjust(20)
+            stock = f"Stock: {producto.stock}".rjust(20)
+
+            listbox.insert("end", f"{nombre} {precio} {stock}")
+
+
+        def seleccionar_producto():
+            """Obtiene la selección del usuario y lo coloca en el Treeview principal llamando a `cargar_producto_en_treeview`."""
+            seleccion = listbox.curselection()
+            if seleccion:
+                index = seleccion[0]
+                producto_seleccionado = productos[index]
+
+                # Llamar a la función que maneja la inserción y actualización en el Treeview
+                self.cargar_producto_en_treeview(producto_seleccionado)
+
+            # Cerrar el popup después de la selección
+            popup.destroy()
+
+
+        # Botón para confirmar la selección
+        btn_seleccionar = ctk.CTkButton(popup, text="Seleccionar", command=seleccionar_producto, fg_color="#F3920F")
+        btn_seleccionar.pack(pady=10)
+
 
 
     def cargar_producto_en_treeview(self, producto):
