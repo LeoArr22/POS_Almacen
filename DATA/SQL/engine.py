@@ -16,6 +16,7 @@ class Producto(Base):
     precio = Column(Integer)
     stock = Column(Integer)
     costo = Column(Integer)
+    ganancia_acumulada = Column(Integer)
     codigo_barra = Column(String)
     categoriaID = Column(Integer, ForeignKey('Categoria.categoriaID'))
     

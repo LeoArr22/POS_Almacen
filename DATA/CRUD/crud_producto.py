@@ -12,7 +12,7 @@ class CRUD_producto():
                 producto_cb, error = self.obtener_producto_por_cb(codigo_barra, session)
                 if producto_cb is None:
                     nuevo_producto = Producto(
-                        nombre=nombre, precio=precio, stock=stock, costo=costo, 
+                        nombre=nombre, precio=precio, stock=stock, costo=costo, ganancia_acumulada=0,
                         codigo_barra=codigo_barra, categoriaID=categoria_id
                     )
                     session.add(nuevo_producto)
@@ -85,13 +85,20 @@ class CRUD_producto():
                 
     def obtener_todos_productos(self):
         with self.Session() as session:
-            try:
-                productos = session.query(Producto, Categoria.nombre).join(
-                    Categoria, Producto.categoriaID == Categoria.categoriaID
-                ).all()
-                return productos
-            except Exception as e:
-                return None
+            productos = (
+                session.query(
+                    Producto.productoID,
+                    Producto.nombre,
+                    Producto.precio,
+                    Producto.stock,
+                    Producto.costo,
+                    Producto.codigo_barra,
+                    Producto.ganancia_acumulada,
+                    Categoria.nombre.label("categoria_nombre")
+                )
+                .join(Categoria, Producto.categoriaID == Categoria.categoriaID).all()
+            )
+            return productos
 
     def actualizar_producto(self, nombre, nuevo_nombre=None, nuevo_precio=None, nuevo_stock=None, nuevo_costo=None, nuevo_cb=None, nueva_categoria=None):
         with self.Session() as session:

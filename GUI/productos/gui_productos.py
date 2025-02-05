@@ -103,23 +103,31 @@ class ProductosApp:
         style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 20, 'bold'))
         style.map("Treeview", background=[('selected', '#F3920F')])
 
-        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Categoria", "Nombre", "Precio", "Stock", "Costo", "CodBar"), show="headings", style="Treeview", height=15)
+        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Categoria", "Nombre", "Precio", "Stock", "Costo", "GananciaAcumulada", "CodBar"), show="headings", style="Treeview", height=15)
+
+        # Encabezados de las columnas
         self.tree.heading("ID", text="ID", command=lambda: self.ordenar_columna("ID"))
         self.tree.heading("Categoria", text="Categoria", command=lambda: self.ordenar_columna("Categoria"))
         self.tree.heading("Nombre", text="Nombre", command=lambda: self.ordenar_columna("Nombre"))
         self.tree.heading("Precio", text="Precio", command=lambda: self.ordenar_columna("Precio"))
         self.tree.heading("Stock", text="Stock", command=lambda: self.ordenar_columna("Stock"))
         self.tree.heading("Costo", text="Costo", command=lambda: self.ordenar_columna("Costo"))
+        self.tree.heading("GananciaAcumulada", text="Ganancia Acumulada", command=lambda: self.ordenar_columna("GananciaAcumulada"))
         self.tree.heading("CodBar", text="CodBar", command=lambda: self.ordenar_columna("CodBar"))
+
+        # Agregamos el Treeview al grid
         self.tree.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
-        
-        self.tree.column("ID", anchor="center", width=25, minwidth=25)  # Columna "ID" más pequeña
-        self.tree.column("Categoria", width=120, minwidth=100)  # Columna "Categoria" más ancha
+
+        # Ajustamos el ancho de las columnas
+        self.tree.column("ID", anchor="center", width=20, minwidth=10)  # Ajustamos el ID para que sea más pequeño
+        self.tree.column("Categoria", width=120, minwidth=100)
         self.tree.column("Nombre", width=150, minwidth=100)
-        self.tree.column("Precio", width=40, minwidth=40)
-        self.tree.column("Stock", width=40, minwidth=40)
-        self.tree.column("Costo", width=40, minwidth=40)
-        self.tree.column("CodBar", width=100, minwidth=90)
+        self.tree.column("Precio", width=60, minwidth=60)  # Ajustamos el precio para que no esté tan apretado
+        self.tree.column("Stock", width=20, minwidth=10)   # Ajustamos el stock para que sea legible
+        self.tree.column("Costo", width=60, minwidth=60)   # Ajustamos el costo
+        self.tree.column("GananciaAcumulada", width=120, minwidth=100)  # Columna "Ganancia Acumulada"
+        self.tree.column("CodBar", width=120, minwidth=100)  # Ajustamos el código de barra
+
 
 ### SCROLLBAR ###
         self.scrollbar = ctk.CTkScrollbar(self.frame_principal, orientation="vertical", command=self.tree.yview)
@@ -211,23 +219,38 @@ class ProductosApp:
 ### TREE VIEW METODOS ###
     def cargar_datos(self):
         productos = self.crud_producto.obtener_todos_productos()
+        
+        # Limpiar el Treeview antes de cargar nuevos datos
         for row in self.tree.get_children():
             self.tree.delete(row)
+        
         self.datos = []
         
         # Si no hay productos, mostrar mensaje en la primera fila
         if not productos:
-            self.tree.insert("", "end", values=("No hay productos cargados", "", "", "", "", "", ""), tags=("empty",))
+            self.tree.insert("", "end", values=("No hay productos cargados", "", "", "", "", "", "", ""), tags=("empty",))
             return self.datos
         
-        for index, (producto, self.categoria_nombre) in enumerate(productos):
+        for index, (productoID, nombre, precio, stock, costo, codigo_barra, ganancia_acumulada, categoria_nombre) in enumerate(productos):
             tag = "evenrow" if index % 2 == 0 else "oddrow"
-            self.tree.insert("", "end", values=(producto.productoID, self.categoria_nombre, producto.nombre, int(producto.precio),
-                                                producto.stock, int(producto.costo), producto.codigo_barra), tags=(tag,))
-            # Guardar nombre de la categoría en lugar del ID para ordenar correctamente
-            self.datos.append((producto.productoID, self.categoria_nombre, producto.nombre, producto.precio,
-                            producto.stock, producto.costo, producto.codigo_barra))
+            
+            self.tree.insert(
+                "", "end",
+                values=(
+                    productoID, categoria_nombre, nombre, int(precio),
+                    stock, int(costo), int(ganancia_acumulada), codigo_barra  # 🔥 Se agrega la ganancia acumulada
+                ),
+                tags=(tag,)
+            )
+            
+            # Guardar datos para ordenamiento
+            self.datos.append((
+                productoID, categoria_nombre, nombre, precio,
+                stock, costo, ganancia_acumulada, codigo_barra
+            ))
+        
         return self.datos
+
 
     def ordenar_columna(self, columna):
         col_index = ["ID", "Categoria", "Nombre", "Precio", "Stock", "Costo", "CodBar"].index(columna)

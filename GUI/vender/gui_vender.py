@@ -3,8 +3,8 @@ import tkinter as tk
 from tkinter import ttk
 from data.sql.engine import Session
 from data.crud.crud_producto import CRUD_producto
+from data.crud.crud_usuarios import CRUD_usuario
 from gui.util.generic import centrar_ventana, destruir
-from models.models.modelo_producto import ModeloProducto
 
 
 
@@ -205,8 +205,11 @@ class DetallesApp():
         self.boton_eliminar = ctk.CTkButton(self.botones_frame, text="Finalizar Venta", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.boton_eliminar.grid(row=2, column=5, padx=40, pady=5)
 
+        #CRUD SESSION
         self.crud_producto = CRUD_producto(Session)
-
+        self.crud_usuario = CRUD_usuario(Session)
+        
+        # EVENTO CODIGO BARRA<
         self.codigo_barra_entry.bind("<KeyRelease>", self.buscar_por_codigo_de_barra)
     
         self.ventana.mainloop()
