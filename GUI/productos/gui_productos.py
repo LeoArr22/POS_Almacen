@@ -588,7 +588,7 @@ class ProductosApp:
     def eliminar_producto(self):
         selected_item = self.tree.selection()
         if not selected_item:
-            self.error_label.configure(text="Por favor, selecciona un usuario.", text_color="#FF0000")
+            self.error_label.configure(text="Por favor, selecciona un producto.", text_color="#FF0000")
             return
         nombre_producto = self.tree.item(selected_item)["values"][2]
         

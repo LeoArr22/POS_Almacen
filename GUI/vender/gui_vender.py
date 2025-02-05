@@ -6,8 +6,10 @@ from data.crud.crud_producto import CRUD_producto
 from gui.util.generic import centrar_ventana, destruir
 from models.models.modelo_producto import ModeloProducto
 
-class DetallesApp:
-    def __init__(self):
+
+
+class DetallesApp():
+    def __init__(self, usuario="admin"):
         self.ventana = ctk.CTk()
         self.ventana.title('Listado de Productos')
         centrar_ventana(self.ventana, 1200, 650)
@@ -86,9 +88,9 @@ class DetallesApp:
         # Label para el título, ajustado más cerca del listado
         self.label_titulo = ctk.CTkLabel(
             self.frame_principal,
-            text="Gestor de Ventas\nUsuario Logeado: Pepito",
+            text=f"Gestor de Ventas\nUsuario Logeado: {usuario}",
             fg_color="#1C2124",
-            font=("Helvetica", 30, "bold"),  # Tamaño del texto reducido para mayor ajuste
+            font=("Helvetica", 20, "bold"),  # Tamaño del texto reducido para mayor ajuste
             text_color="#F3920F",
             height=40,
         )
@@ -192,7 +194,7 @@ class DetallesApp:
         self.label_eliminar.grid(row=1, column=4, sticky="ew")
         
         # Boton eliminar producto
-        self.boton_eliminar = ctk.CTkButton(self.botones_frame, text="Eliminar", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.boton_eliminar = ctk.CTkButton(self.botones_frame, text="Eliminar", command=self.eliminar_producto, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.boton_eliminar.grid(row=2, column=4, padx=30, pady=5)
         
         # Total de la venta
@@ -204,7 +206,6 @@ class DetallesApp:
         self.boton_eliminar.grid(row=2, column=5, padx=40, pady=5)
 
         self.crud_producto = CRUD_producto(Session)
-        self.cargar_datos()
 
         self.codigo_barra_entry.bind("<KeyRelease>", self.buscar_por_codigo_de_barra)
     
@@ -224,6 +225,7 @@ class DetallesApp:
                 self.error_label.configure(text="")
             else:
                 self.error_label.configure(text="Producto no encontrado. Intenta de nuevo.")
+        self.codigo_barra_entry.focus_set()
 
     # BUSCAR Y CARGAR POR NOMBRE
     def buscar_por_nombre(self):
@@ -264,9 +266,9 @@ class DetallesApp:
 
         # Llenar el Listbox con los productos
         for producto in productos:
-            nombre = f"Nombre: {producto.nombre}".ljust(30)  # Ajusta el espacio según la longitud
-            precio = f"Precio: ${producto.precio}".rjust(20)
-            stock = f"Stock: {producto.stock}".rjust(20)
+            nombre = f"Nombre: {producto.nombre}".ljust(20)  # Ajusta el espacio según la longitud
+            precio = f"Precio: ${producto.precio}".ljust(10)
+            stock = f"Stock: {producto.stock}".ljust(10)
 
             listbox.insert("end", f"{nombre} {precio} {stock}")
 
@@ -283,7 +285,8 @@ class DetallesApp:
 
             # Cerrar el popup después de la selección
             popup.destroy()
-
+            self.codigo_barra_entry.focus_set()
+            self.nombre_entry.delete(0, 'end')
 
         # Botón para confirmar la selección
         btn_seleccionar = ctk.CTkButton(popup, text="Seleccionar", command=seleccionar_producto, fg_color="#F3920F")
@@ -306,6 +309,7 @@ class DetallesApp:
         self.cargar_producto_en_treeview(producto)
         self.id_entry.delete(0, 'end')  # Limpiar entrada para el siguiente código de barra
         self.error_label.configure(text="")
+        self.codigo_barra_entry.focus_set()
 
     def cargar_producto_en_treeview(self, producto):
         # Comprobar si el producto ya está en la lista
@@ -348,7 +352,7 @@ class DetallesApp:
         try:
             nueva_cantidad = int(self.cantidad_entry.get())
             if nueva_cantidad > stock_disponible:
-                self.error_label.configure(text=f"Cantidad excede el stock disponible ({stock_disponible}).")
+                self.error_label.configure(text=f"Cantidad excede el stock disponible ({stock_disponible}).", text_color="#FF0000")
             else:
                 new_total = precio * nueva_cantidad
                 self.tree.item(item_id, values=(producto_id, nombre, precio, nueva_cantidad, stock_disponible, new_total))
@@ -356,7 +360,7 @@ class DetallesApp:
                 self.error_label.configure(text="")  # Limpiar mensaje de error
                 self.cantidad_entry.delete(0, "end")  # Limpiar campo de entrada después de actualizar
         except ValueError:
-            self.error_label.configure(text="Ingrese un número válido.")
+            self.error_label.configure(text="Ingrese un número válido.", text_color="#FF0000")
     
     def actualizar_total_venta(self):
         total = 0
@@ -364,8 +368,16 @@ class DetallesApp:
             total+= (self.tree.item(item)["values"][5])  # Total está en la 5ta columna
         self.total_label.configure(text=f"Total: ${total}")
 
-    def cargar_datos(self):
-        # Aquí puedes cargar todos los productos si es necesario
-        pass
+    def eliminar_producto(self):
+        producto_seleccionado = self.tree.selection()
+        if not producto_seleccionado:
+            self.error_label.configure(text="Por favor, selecciona un producto de la venta para eliminar.", text_color="#FF0000")
+            return        
+        try:
+            self.tree.delete(producto_seleccionado)
+            self.error_label.configure(text="Producto eliminado de la venta con éxito.", text_color="#00FF00") 
+            self.actualizar_total_venta()
+        except Exception as e:
+            self.error_label.configure(text=f"Error al eliminar el producto: {str(e)}", text_color="#FF0000")
 
 
