@@ -22,6 +22,20 @@ class CRUD_producto():
                     return None, "Ya existe un producto con ese código de barra"
             else:
                 return None, "Ya existe un producto con ese nombre"
+            
+    def obtener_producto_por_id(self, id, session=None):
+        close_session = False
+        if session is None:
+            session = self.Session()
+            close_session = True
+        try:
+            producto = session.query(Producto).filter(Producto.productoID==id).one()
+            return producto, ""
+        except NoResultFound:
+            return None, "No se encontro ningun producto con ese ID"
+        finally:
+            if close_session:
+                session.close()
 
     def obtener_producto_por_nombre(self, nombre, session=None):
         close_session = False

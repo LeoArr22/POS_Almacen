@@ -172,7 +172,7 @@ class DetallesApp:
         self.id_entry.grid(row=1, column=2, padx=5, sticky="ew")
         
         # Boton Busqueda por ID
-        self.boton_busqueda_por_id = ctk.CTkButton(self.botones_frame, text="Buscar por ID", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.boton_busqueda_por_id = ctk.CTkButton(self.botones_frame, text="Buscar por ID", command=self.buscar_por_id, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.boton_busqueda_por_id.grid(row=2, column=2, padx=5, pady=5)
         
         # Label de cantidad
@@ -289,7 +289,23 @@ class DetallesApp:
         btn_seleccionar = ctk.CTkButton(popup, text="Seleccionar", command=seleccionar_producto, fg_color="#F3920F")
         btn_seleccionar.pack(pady=10)
 
+    #BUSCAR Y CARGAR POR ID
+    def buscar_por_id(self):
+        id = self.id_entry.get()
+        
+        if not id:
+            self.error_label.configure(text="Ingrese un id para buscar", text_color="#FF0000")
+            return
+        
+        producto, error = self.crud_producto.obtener_producto_por_id(id)
+        
+        if not producto:
+            self.error_label.configure(text=error, text_color="#FF0000")
+            return
 
+        self.cargar_producto_en_treeview(producto)
+        self.id_entry.delete(0, 'end')  # Limpiar entrada para el siguiente código de barra
+        self.error_label.configure(text="")
 
     def cargar_producto_en_treeview(self, producto):
         # Comprobar si el producto ya está en la lista
