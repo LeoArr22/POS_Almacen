@@ -120,7 +120,7 @@ class UsuariosApp:
         self.botones_frame.grid_rowconfigure(0, weight=1)
 
         # CRUD
-        self.crud_usuario = CRUD_usuario(Session())
+        self.crud_usuario = CRUD_usuario(Session)
         self.datos = self.cargar_usuarios()
 
         # Campos para crear usuario

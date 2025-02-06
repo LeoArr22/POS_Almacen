@@ -5,15 +5,9 @@ class CRUD_detalle():
     def __init__(self, Session):
         self.Session = Session
 
-    def crear_detalle(self, producto_id, venta_id, cantidad):
+    def crear_detalle(self, producto_id, venta_id, cantidad, total_prod):
         with self.Session() as session:
             detalle_existente, _ = self.obtener_detalle(producto_id, venta_id, session)
-            producto = session.query(Producto).filter_by(productoID=producto_id).first()
-
-            if producto is None:
-                return None, "El producto no existe"
-
-            total_prod = cantidad * producto.precio  # Calcular total_prod
 
             if detalle_existente is None:
                 nuevo_detalle = Detalle(

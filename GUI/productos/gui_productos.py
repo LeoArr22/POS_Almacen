@@ -687,7 +687,6 @@ class ProductosApp:
         self.botones_frame_popup.grid(row=3, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
         self.botones_frame_popup.grid_rowconfigure(0, weight=1)
         
-        self.crud_categorias = CRUD_categoria(Session())
         self.cargar_categorias()
         
         # Campo para modificar nombre categoria

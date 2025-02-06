@@ -4,6 +4,8 @@ from tkinter import ttk
 from data.sql.engine import Session
 from data.crud.crud_producto import CRUD_producto
 from data.crud.crud_usuarios import CRUD_usuario
+from data.crud.crud_venta import CRUD_venta
+from data.crud.crud_detalle import CRUD_detalle
 from gui.util.generic import centrar_ventana, destruir
 
 
@@ -202,12 +204,17 @@ class DetallesApp():
         self.total_label.grid(row=0, column=5, padx=40)
         
         # Boton finalizar venta
-        self.boton_eliminar = ctk.CTkButton(self.botones_frame, text="Finalizar Venta", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.boton_eliminar = ctk.CTkButton(self.botones_frame, text="Finalizar Venta", command=self.finalizar_venta,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.boton_eliminar.grid(row=2, column=5, padx=40, pady=5)
 
         #CRUD SESSION
         self.crud_producto = CRUD_producto(Session)
         self.crud_usuario = CRUD_usuario(Session)
+        self.crud_venta = CRUD_venta(Session)
+        self.crud_detalle = CRUD_detalle(Session)
+        
+        #OBTENER USUARIO
+        self.user = self.crud_usuario.obtener_usuario(usuario)
         
         # EVENTO CODIGO BARRA<
         self.codigo_barra_entry.bind("<KeyRelease>", self.buscar_por_codigo_de_barra)
@@ -366,10 +373,10 @@ class DetallesApp():
             self.error_label.configure(text="Ingrese un número válido.", text_color="#FF0000")
     
     def actualizar_total_venta(self):
-        total = 0
+        self.total = 0
         for item in self.tree.get_children():
-            total+= (self.tree.item(item)["values"][5])  # Total está en la 5ta columna
-        self.total_label.configure(text=f"Total: ${total}")
+            self.total+= (self.tree.item(item)["values"][5])  # Total está en la 5ta columna
+        self.total_label.configure(text=f"Total: ${self.total}")
 
     def eliminar_producto(self):
         producto_seleccionado = self.tree.selection()
@@ -383,4 +390,35 @@ class DetallesApp():
         except Exception as e:
             self.error_label.configure(text=f"Error al eliminar el producto: {str(e)}", text_color="#FF0000")
 
+    def finalizar_venta(self):
+        self.ganancia_total = 0
+        self.vendedor_id = self.user.vendedorID
+        
+        for item in self.tree.get_children():
+            valores = self.tree.item(item)["values"]
+            
+            producto_id = valores[0]
+            cantidad = valores[3]
+            
+            producto, error = self.crud_producto.obtener_producto_por_id(producto_id)
+            
+            self.ganancia_total += (producto.precio - producto.costo) * cantidad
+            
+        venta, error = self.crud_venta.crear_venta(self.total, self.ganancia_total, self.vendedor_id)
+        
+        if venta is None:
+            print(f"Error al crear la venta")  
+            return
+        
+        for item in self.tree.get_children():
+            valores = self.tree.item(item)["values"]
+            
+            producto_id = valores[0]
+            cantidad = valores[3]
+            total_prod = valores[5]
+            
+            
+            detalle, error = self.crud_detalle.crear_detalle(producto_id, venta.ventaID, cantidad, total_prod)
+        
+        
 

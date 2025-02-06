@@ -27,5 +27,5 @@ from gui.vender.gui_vender import DetallesApp
 
 if __name__ == "__main__":
     DetallesApp()
-    # LoginApp
+    # LoginApp()
 

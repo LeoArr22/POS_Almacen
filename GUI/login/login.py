@@ -28,7 +28,7 @@ class LoginApp:
         self.fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         # Revisar si la categoria "Sin Categoria" existe, sino la crea
-        crud_categoria=CRUD_categoria(Session())
+        crud_categoria=CRUD_categoria(Session)
         crud_categoria.crear_categoria("Sin Categoria")
 
         # Revisar si mostrar mensaje inicial
@@ -165,7 +165,7 @@ class LoginApp:
             self.etiqueta_error_login.place_forget()
 
         with Session() as session:
-            crud_usuario = CRUD_usuario(session)
+            crud_usuario = CRUD_usuario(Session)
             usuario_obj = crud_usuario.verificar_contrasena(usuario, contrasena)
             if usuario_obj:
                 self.mostrar_master_panel()
