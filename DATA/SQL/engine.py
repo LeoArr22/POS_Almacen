@@ -49,6 +49,7 @@ class Venta(Base):
     ventaID = Column(Integer, primary_key=True, autoincrement=True)
     fecha = Column(Date)
     total_venta = Column(Integer)
+    ganancia_total = Column(Integer)
     vendedorID = Column(Integer, ForeignKey('Vendedor.vendedorID'))
     
     # Relación con Detalle

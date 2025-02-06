@@ -100,38 +100,41 @@ class ProductosApp:
                         borderwidth=2,
                         font=("Roboto", 14),
                         relief="solid")
-        style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 20, 'bold'))
+        style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 13, 'bold'))
         style.map("Treeview", background=[('selected', '#F3920F')])
 
-        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Categoria", "Nombre", "Precio", "Stock", "Costo", "GananciaAcumulada", "CodBar"), show="headings", style="Treeview", height=15)
+        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Categoria", "Nombre", "Precio", "Stock", "Costo", "Ganancia Unitaria", "Ganancia Acumulada", "CodBar"), show="headings", style="Treeview", height=15)
 
-        # Encabezados de las columnas
         self.tree.heading("ID", text="ID", command=lambda: self.ordenar_columna("ID"))
         self.tree.heading("Categoria", text="Categoria", command=lambda: self.ordenar_columna("Categoria"))
         self.tree.heading("Nombre", text="Nombre", command=lambda: self.ordenar_columna("Nombre"))
         self.tree.heading("Precio", text="Precio", command=lambda: self.ordenar_columna("Precio"))
         self.tree.heading("Stock", text="Stock", command=lambda: self.ordenar_columna("Stock"))
         self.tree.heading("Costo", text="Costo", command=lambda: self.ordenar_columna("Costo"))
-        self.tree.heading("GananciaAcumulada", text="Ganancia Acumulada", command=lambda: self.ordenar_columna("GananciaAcumulada"))
+        self.tree.heading("Ganancia Unitaria", text="Ganancia", command=lambda: self.ordenar_columna("Ganancia Unitaria")) 
+        self.tree.heading("Ganancia Acumulada", text="GananAcumu", command=lambda: self.ordenar_columna("Ganancia Acumulada"))
         self.tree.heading("CodBar", text="CodBar", command=lambda: self.ordenar_columna("CodBar"))
 
-        # Agregamos el Treeview al grid
-        self.tree.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
 
-        # Ajustamos el ancho de las columnas
-        self.tree.column("ID", anchor="center", width=20, minwidth=10)  # Ajustamos el ID para que sea más pequeño
-        self.tree.column("Categoria", width=120, minwidth=100)
-        self.tree.column("Nombre", width=150, minwidth=100)
-        self.tree.column("Precio", width=60, minwidth=60)  # Ajustamos el precio para que no esté tan apretado
-        self.tree.column("Stock", width=20, minwidth=10)   # Ajustamos el stock para que sea legible
-        self.tree.column("Costo", width=60, minwidth=60)   # Ajustamos el costo
-        self.tree.column("GananciaAcumulada", width=120, minwidth=100)  # Columna "Ganancia Acumulada"
-        self.tree.column("CodBar", width=120, minwidth=100)  # Ajustamos el código de barra
+        # Agregamos el Treeview al grid
+        self.tree.grid(row=3, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
+
+        # Ajustar tamaños de columnas
+        self.tree.column("ID", anchor="center", width=10)  
+        self.tree.column("Categoria", width=100, minwidth=100)  
+        self.tree.column("Nombre", width=100)
+        self.tree.column("Precio", width=40)
+        self.tree.column("Stock", width=30)
+        self.tree.column("Costo", width=40)
+        self.tree.column("Ganancia Unitaria", width=80, minwidth=70)  
+        self.tree.column("Ganancia Acumulada", width=90, minwidth=80)  
+        self.tree.column("CodBar", width=100, minwidth=90)
+
 
 
 ### SCROLLBAR ###
         self.scrollbar = ctk.CTkScrollbar(self.frame_principal, orientation="vertical", command=self.tree.yview)
-        self.scrollbar.grid(row=1, column=3, sticky="ns")
+        self.scrollbar.grid(row=3, column=3, sticky="ns")
         self.tree.configure(yscrollcommand=self.scrollbar.set)
 
 ### LABEL PARA MENSAJES DE ERROR ###
@@ -140,7 +143,7 @@ class ProductosApp:
 
 ### FRAME PARA CAMPOS Y BOTONES ####
         self.botones_frame = ctk.CTkFrame(self.frame_principal, height=50, fg_color="#1C2124")
-        self.botones_frame.grid(row=3, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
+        self.botones_frame.grid(row=1, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
         self.botones_frame.grid_rowconfigure(5, weight=1)
         self.botones_frame.grid_columnconfigure(7, weight=1)
 
@@ -161,7 +164,7 @@ class ProductosApp:
 
         # Campo y botón para buscar por nombre
         self.buscar_nombre_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombre del producto", width=200)
-        self.buscar_nombre_entry.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
+        self.buscar_nombre_entry.grid(row=2, column=1, padx=10, sticky="ew")
 
         self.buscar_nombre_button = ctk.CTkButton(
             self.botones_frame, text="Buscar por Nombre", command=self.buscar_por_nombre,
@@ -228,17 +231,17 @@ class ProductosApp:
         
         # Si no hay productos, mostrar mensaje en la primera fila
         if not productos:
-            self.tree.insert("", "end", values=("No hay productos cargados", "", "", "", "", "", "", ""), tags=("empty",))
+            self.tree.insert("", "end", values=("NO", "HAY PRODUCTOS", "CARGADOS", "", "", "", "", "", ""), tags=("empty",))
             return self.datos
         
-        for index, (productoID, nombre, precio, stock, costo, codigo_barra, ganancia_acumulada, categoria_nombre) in enumerate(productos):
+        for index, (productoID, nombre, precio, stock, costo, codigo_barra, ganancia_acumulada, ganancia_unidad, categoria_nombre) in enumerate(productos):
             tag = "evenrow" if index % 2 == 0 else "oddrow"
             
             self.tree.insert(
                 "", "end",
                 values=(
                     productoID, categoria_nombre, nombre, int(precio),
-                    stock, int(costo), int(ganancia_acumulada), codigo_barra  # 🔥 Se agrega la ganancia acumulada
+                    stock, int(costo), int(ganancia_unidad), int(ganancia_acumulada), codigo_barra  # 🔥 Se agrega la ganancia unitaria y acumulada
                 ),
                 tags=(tag,)
             )
@@ -246,7 +249,7 @@ class ProductosApp:
             # Guardar datos para ordenamiento
             self.datos.append((
                 productoID, categoria_nombre, nombre, precio,
-                stock, costo, ganancia_acumulada, codigo_barra
+                stock, costo, ganancia_unidad, ganancia_acumulada, codigo_barra
             ))
         
         return self.datos
@@ -515,7 +518,7 @@ class ProductosApp:
         self.precio_var_mod = ctk.StringVar(value=self.valores[3])
         self.stock_var_mod = ctk.StringVar(value=self.valores[4])
         self.costo_var_mod = ctk.StringVar(value=self.valores[5])
-        self.codigo_barra_var_mod = ctk.StringVar(value=self.valores[6])
+        self.codigo_barra_var_mod = ctk.StringVar(value=self.valores[8])
         self.categoria_var_mod = ctk.StringVar(value=self.valores[1])
 
         # Etiquetas y entradas

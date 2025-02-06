@@ -63,7 +63,6 @@ class CRUD_producto():
                 return None, "No se encontró ningún producto con ese nombre"
             
             return productos, ""
-        
         finally:
             if close_session:
                 session.close()            
@@ -94,11 +93,14 @@ class CRUD_producto():
                     Producto.costo,
                     Producto.codigo_barra,
                     Producto.ganancia_acumulada,
+                    (Producto.precio - Producto.costo).label("ganancia_unidad"),
                     Categoria.nombre.label("categoria_nombre")
                 )
-                .join(Categoria, Producto.categoriaID == Categoria.categoriaID).all()
+                .join(Categoria, Producto.categoriaID == Categoria.categoriaID)
+                .all()
             )
             return productos
+
 
     def actualizar_producto(self, nombre, nuevo_nombre=None, nuevo_precio=None, nuevo_stock=None, nuevo_costo=None, nuevo_cb=None, nueva_categoria=None):
         with self.Session() as session:

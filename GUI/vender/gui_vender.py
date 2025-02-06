@@ -262,7 +262,7 @@ class DetallesApp():
             bg="#1C2124", 
             fg="white",
             selectbackground="#F3920F",
-            font=("Arial", 20),
+            font=("Arial", 15),
             activestyle="none"  
         )
         listbox.pack(pady=10, padx=10, fill="both", expand=True)
@@ -295,7 +295,7 @@ class DetallesApp():
         btn_seleccionar = ctk.CTkButton(popup, text="Seleccionar", command=seleccionar_producto, fg_color="#F3920F")
         btn_seleccionar.pack(pady=10)
 
-    #BUSCAR Y CARGAR POR ID
+    # BUSCAR Y CARGAR POR ID
     def buscar_por_id(self):
         id = self.id_entry.get()
         
