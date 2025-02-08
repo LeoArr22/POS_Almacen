@@ -44,7 +44,7 @@ class DetallesApp():
         self.vender_button = ctk.CTkButton(
             self.frame_principal,
             text="Productos",
-            command=lambda: self.ir_a("vender"),
+            command=lambda: self.proxima("Productos"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -74,7 +74,7 @@ class DetallesApp():
         self.libro_ventas_button = ctk.CTkButton(
             self.frame_principal,
             text="Libro de Ventas",
-            command=lambda: self.ir_a("libro_ventas"),
+            command=lambda: self.proxima("libro_ventas"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -419,6 +419,32 @@ class DetallesApp():
             
             
             detalle, error = self.crud_detalle.crear_detalle(producto_id, venta.ventaID, cantidad, total_prod)
+            if detalle is None:
+                self.error_label.configure(text= f"Error al registrar el detalle: {error}")
+                return
+            
+            # Reducir stock después de registrar el detalle
+            success, error = self.crud_producto.reducir_stock(producto_id, cantidad)
+            if not success:
+                self.error_label.configure(text= f"Error al actualizar stock: {error}")
+                return
+
+            self.error_label.configure(text="Venta finalizada con éxito.")
+            
+            self.tree.delete(*self.tree.get_children())
+
+            
+            
+    ### PROXIMA VENTANA ###
+    def proxima(self, nombre):
+        if nombre=="Usuarios":
+            from gui.usuarios.gui_usuarios import UsuariosApp
+            destruir(self.ventana, UsuariosApp)
+        elif nombre=="Productos":
+            from gui.productos.gui_productos import ProductosApp
+            destruir(self.ventana, ProductosApp)
+        elif nombre=="Libro de Ventas":
+            pass        
         
         
 

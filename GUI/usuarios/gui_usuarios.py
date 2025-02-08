@@ -33,7 +33,7 @@ class UsuariosApp:
         self.vender_button = ctk.CTkButton(
             self.frame_principal,
             text="Vender",
-            command=lambda: self.ir_a("vender"),
+            command=lambda: self.proxima("Vender"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -63,7 +63,7 @@ class UsuariosApp:
         self.libro_ventas_button = ctk.CTkButton(
             self.frame_principal,
             text="Libro de Ventas",
-            command=lambda: self.ir_a("libro_ventas"),
+            command=lambda: self.proxima("libro_ventas"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -164,11 +164,17 @@ class UsuariosApp:
 
         self.ventana.mainloop()
 
+
+ ### PROXIMA VENTANA ###
     def proxima(self, nombre):
         if nombre=="Productos":
             from gui.productos.gui_productos import ProductosApp
             destruir(self.ventana, ProductosApp)
-
+        elif nombre=="Vender":
+            from gui.vender.gui_vender import DetallesApp
+            destruir(self.ventana, DetallesApp)  
+        elif nombre=="Libro de Ventas":
+            pass
 
     def cargar_usuarios(self):
         usuarios = self.crud_usuario.obtener_todos_usuarios()

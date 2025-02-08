@@ -133,3 +133,21 @@ class CRUD_producto():
                 session.commit()
                 return True, None
             return False, error
+        
+    def reducir_stock(self, producto_id, cantidad_vendida):
+        with self.Session() as session:
+            try:
+                producto, error = self.obtener_producto_por_id(producto_id, session)
+                if not producto:
+                    return None, error
+                
+                if producto.stock < cantidad_vendida:
+                    return None, "Stock insuficiente para completar la venta."
+                
+                producto.stock -= cantidad_vendida
+                session.commit()
+                return True, None
+            except Exception as e:
+                session.rollback()
+                return None, f"Error al reducir el stock: {str(e)}"
+        

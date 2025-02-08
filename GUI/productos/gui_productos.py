@@ -34,7 +34,7 @@ class ProductosApp:
         self.vender_button = ctk.CTkButton(
             self.frame_principal,
             text="Vender",
-            command=lambda: self.ir_a("vender"),
+            command=lambda: self.proxima("Vender"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -64,7 +64,7 @@ class ProductosApp:
         self.libro_ventas_button = ctk.CTkButton(
             self.frame_principal,
             text="Libro de Ventas",
-            command=lambda: self.ir_a("libro_ventas"),
+            command=lambda: self.proxima("libro_ventas"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -218,6 +218,11 @@ class ProductosApp:
         if nombre=="Usuarios":
             from gui.usuarios.gui_usuarios import UsuariosApp
             destruir(self.ventana, UsuariosApp)
+        elif nombre=="Vender":
+            from gui.vender.gui_vender import DetallesApp
+            destruir(self.ventana, DetallesApp)  
+        elif nombre=="Libro de Ventas":
+            pass
 
 ### TREE VIEW METODOS ###
     def cargar_datos(self):

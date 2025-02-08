@@ -52,6 +52,9 @@ class Venta(Base):
     ganancia_total = Column(Integer)
     vendedorID = Column(Integer, ForeignKey('Vendedor.vendedorID'))
     
+      # Relación con Vendedor
+    vendedor = relationship("Vendedor", back_populates="ventas")
+    
     # Relación con Detalle
     detalle = relationship("Detalle", back_populates="venta")  
 
@@ -60,3 +63,6 @@ class Vendedor(Base):
     vendedorID = Column(Integer, primary_key=True, autoincrement=True)
     usuario = Column(String)
     contrasena = Column(Integer)
+    
+    # Relacion con Ventas   
+    ventas = relationship("Venta", back_populates="vendedor")  
