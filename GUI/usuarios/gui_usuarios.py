@@ -2,7 +2,7 @@ import customtkinter as ctk
 from tkinter import ttk
 from data.sql.engine import Session
 from data.crud.crud_usuarios import CRUD_usuario
-from gui.util.generic import centrar_ventana, destruir
+from gui.util.generic import centrar_ventana, proxima
 from models.models.modelo_usuario import ModeloUsuario
 
 class UsuariosApp:
@@ -33,7 +33,7 @@ class UsuariosApp:
         self.vender_button = ctk.CTkButton(
             self.frame_principal,
             text="Vender",
-            command=lambda: self.proxima("Vender"),
+            command=lambda: proxima(self.ventana,"Vender"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -48,7 +48,7 @@ class UsuariosApp:
         self.productos_button = ctk.CTkButton(
             self.frame_principal,
             text="Productos",
-            command=lambda: self.proxima("Productos"),
+            command=lambda: proxima(self.ventana, "Productos"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -63,7 +63,7 @@ class UsuariosApp:
         self.libro_ventas_button = ctk.CTkButton(
             self.frame_principal,
             text="Libro de Ventas",
-            command=lambda: self.proxima("libro_ventas"),
+            command=lambda: proxima(self.ventana, "libro_ventas"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -165,16 +165,7 @@ class UsuariosApp:
         self.ventana.mainloop()
 
 
- ### PROXIMA VENTANA ###
-    def proxima(self, nombre):
-        if nombre=="Productos":
-            from gui.productos.gui_productos import ProductosApp
-            destruir(self.ventana, ProductosApp)
-        elif nombre=="Vender":
-            from gui.vender.gui_vender import DetallesApp
-            destruir(self.ventana, DetallesApp)  
-        elif nombre=="Libro de Ventas":
-            pass
+ 
 
     def cargar_usuarios(self):
         usuarios = self.crud_usuario.obtener_todos_usuarios()

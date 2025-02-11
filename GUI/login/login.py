@@ -1,8 +1,8 @@
 import json
-from data.sql.engine import *
+from data.sql.engine import Session
 from data.crud.crud_usuarios import CRUD_usuario
 from data.crud.crud_categoria import CRUD_categoria
-from gui.util.generic import leer_imagen, centrar_ventana
+from gui.util.generic import leer_imagen, centrar_ventana, proxima
 from gui.master.master import MasterPanel
 
 import customtkinter as ctk
@@ -30,6 +30,8 @@ class LoginApp:
         # Revisar si la categoria "Sin Categoria" existe, sino la crea
         crud_categoria=CRUD_categoria(Session)
         crud_categoria.crear_categoria("Sin Categoria")
+        
+        self.crud_usuario = CRUD_usuario(Session)
 
         # Revisar si mostrar mensaje inicial
         if  not self.verificar_mensaje_mostrado():
@@ -56,10 +58,7 @@ class LoginApp:
             json.dump({"mensaje_mostrado": True}, archivo)
 
     def crear_usuario_admin(self):
-        """Crea el usuario administrador por defecto."""
-        with Session() as session:
-            crud_usuario = CRUD_usuario(session)
-            crud_usuario.crear_usuario("admin", 1234)
+            self.crud_usuario.crear_usuario("admin", 1234)
 
     def mostrar_mensaje_inicial(self):
         mensajes = [
@@ -164,13 +163,14 @@ class LoginApp:
         if self.etiqueta_error_login:
             self.etiqueta_error_login.place_forget()
 
-        with Session() as session:
-            crud_usuario = CRUD_usuario(Session)
-            usuario_obj = crud_usuario.verificar_contrasena(usuario, contrasena)
-            if usuario_obj:
+        self.usuario_obj = self.crud_usuario.verificar_contrasena(usuario, contrasena)
+        if self.usuario_obj:
+            if self.usuario_obj.usuario == "admin":
                 self.mostrar_master_panel()
             else:
-                self.mostrar_error("Credenciales Incorrectas")
+                self.mostrar_ventas()    
+        else:
+            self.mostrar_error("Credenciales Incorrectas")
 
     def mostrar_master_panel(self):
         """Elimina widgets del login y muestra el MasterPanel."""
@@ -178,6 +178,9 @@ class LoginApp:
             if widget != self.fondo_label:  # Mantener el fondo
                 widget.destroy()
         MasterPanel(self.ventana, self.frame_principal)
+
+    def mostrar_ventas(self):
+        proxima(self.ventana, "Vender-Noadmin", self.usuario_obj.usuario)
 
     def mostrar_error(self, mensaje):
         """Muestra un mensaje de error."""

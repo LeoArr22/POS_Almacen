@@ -30,3 +30,19 @@ def destruir(ventana_actual, proxima_ventana):
         ventana_actual.destroy()  # Cierra la ventana actual
         proxima_ventana()
     
+### PROXIMA VENTANA ###
+def proxima(ventana, nombre, usuario=None):
+    if nombre=="Usuarios":
+        from gui.usuarios.gui_usuarios import UsuariosApp
+        destruir(ventana, UsuariosApp)
+    elif nombre=="Productos":
+        from gui.productos.gui_productos import ProductosApp
+        destruir(ventana, ProductosApp)
+    elif nombre=="Vender":
+        from gui.vender.gui_vender import DetallesApp
+        destruir(ventana, DetallesApp) 
+    elif nombre == "Vender-Noadmin":
+        from gui.vender.gui_vender import DetallesApp
+        destruir(ventana, lambda: DetallesApp(usuario))
+    elif nombre=="Libro de Ventas":
+        pass     

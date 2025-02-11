@@ -3,7 +3,7 @@ from tkinter import ttk
 from data.sql.engine import Session
 from data.crud.crud_producto import CRUD_producto
 from data.crud.crud_categoria import CRUD_categoria
-from gui.util.generic import centrar_ventana, destruir
+from gui.util.generic import centrar_ventana, proxima
 from models.models.modelo_producto import ModeloProducto
 from models.models.modelo_categoria import ModeloCategoria
 
@@ -34,7 +34,7 @@ class ProductosApp:
         self.vender_button = ctk.CTkButton(
             self.frame_principal,
             text="Vender",
-            command=lambda: self.proxima("Vender"),
+            command=lambda: proxima(self.ventana, "Vender"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -49,7 +49,7 @@ class ProductosApp:
         self.productos_button = ctk.CTkButton(
             self.frame_principal,
             text="Usuarios",
-            command=lambda: self.proxima("Usuarios"),
+            command=lambda: proxima(self.ventana, "Usuarios"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -64,7 +64,7 @@ class ProductosApp:
         self.libro_ventas_button = ctk.CTkButton(
             self.frame_principal,
             text="Libro de Ventas",
-            command=lambda: self.proxima("libro_ventas"),
+            command=lambda: proxima(self.ventana, "libro_ventas"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -213,16 +213,6 @@ class ProductosApp:
 
                                                             ### METODOS ###
 
-### PROXIMA VENTANA ###
-    def proxima(self, nombre):
-        if nombre=="Usuarios":
-            from gui.usuarios.gui_usuarios import UsuariosApp
-            destruir(self.ventana, UsuariosApp)
-        elif nombre=="Vender":
-            from gui.vender.gui_vender import DetallesApp
-            destruir(self.ventana, DetallesApp)  
-        elif nombre=="Libro de Ventas":
-            pass
 
 ### TREE VIEW METODOS ###
     def cargar_datos(self):
