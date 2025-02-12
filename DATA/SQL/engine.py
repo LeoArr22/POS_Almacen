@@ -46,15 +46,17 @@ class Detalle(Base):
 
 class Venta(Base):
     __tablename__ = 'Venta'
+
     ventaID = Column(Integer, primary_key=True, autoincrement=True)
     fecha = Column(Date)
     total_venta = Column(Integer)
     ganancia_total = Column(Integer)
-    vendedorID = Column(Integer, ForeignKey('Vendedor.vendedorID'))
-    
-      # Relación con Vendedor
+    vendedorID = Column(Integer, ForeignKey('Vendedor.vendedorID', ondelete="SET NULL"), nullable=True)
+    vendedor_nombre = Column(String, nullable=False)
+
+    # Relación con Vendedor
     vendedor = relationship("Vendedor", back_populates="ventas")
-    
+
     # Relación con Detalle
     detalle = relationship("Detalle", back_populates="venta")  
 
@@ -65,4 +67,4 @@ class Vendedor(Base):
     contrasena = Column(Integer)
     
     # Relacion con Ventas   
-    ventas = relationship("Venta", back_populates="vendedor")  
+    ventas = relationship("Venta", back_populates="vendedor", passive_deletes=True)

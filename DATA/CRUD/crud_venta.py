@@ -5,13 +5,15 @@ class CRUD_venta():
     def __init__(self, Session):
         self.Session = Session
 
-    def crear_venta(self, total_venta, ganancia_total, vendedor_id):
+    def crear_venta(self, total_venta, ganancia_total, vendedor_id, vendedor_nombre):
         with self.Session() as session:
             nueva_venta = Venta(
                 fecha=func.current_date(),  # Fecha actual
                 total_venta=total_venta,
                 ganancia_total=ganancia_total,
-                vendedorID=vendedor_id
+                vendedorID=vendedor_id,
+                vendedor_nombre = vendedor_nombre
+                
             )
             session.add(nueva_venta)
             session.commit()

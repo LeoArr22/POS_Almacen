@@ -28,14 +28,13 @@ class LoginApp:
         self.fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         # Revisar si la categoria "Sin Categoria" existe, sino la crea
-        crud_categoria=CRUD_categoria(Session)
-        crud_categoria.crear_categoria("Sin Categoria")
-        
+        self.crud_categoria=CRUD_categoria(Session)        
         self.crud_usuario = CRUD_usuario(Session)
 
         # Revisar si mostrar mensaje inicial
         if  not self.verificar_mensaje_mostrado():
-            self.crear_usuario_admin()
+            self.crud_usuario.crear_usuario("admin", 1234) # CREA USUARIO admin
+            self.crud_categoria.crear_categoria("Sin Categoria") # CREA CATEGORIA AUXILIAR "Sin Categoria"
             self.mostrar_mensaje_inicial()
         else:
             self.mostrar_login()
@@ -57,8 +56,6 @@ class LoginApp:
         with open("config.json", "w") as archivo:
             json.dump({"mensaje_mostrado": True}, archivo)
 
-    def crear_usuario_admin(self):
-            self.crud_usuario.crear_usuario("admin", 1234)
 
     def mostrar_mensaje_inicial(self):
         mensajes = [

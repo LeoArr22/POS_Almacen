@@ -92,7 +92,7 @@ class DetallesApp():
             self.frame_principal,
             text=f"Gestor de Ventas\nUsuario Logeado: {usuario}",
             fg_color="#1C2124",
-            font= ("Helvetica", 20, "bold") if usuario == "admin" else ("Helvetica", 30 , "bold") ,  # Tamaño del texto reducido para mayor ajuste
+            font= ("Helvetica", 20, "bold") if usuario == "admin" else ("Helvetica", 30 , "bold"),
             text_color="#F3920F",
             height=40,
         )
@@ -392,8 +392,14 @@ class DetallesApp():
             self.error_label.configure(text=f"Error al eliminar el producto: {str(e)}", text_color="#FF0000")
 
     def finalizar_venta(self):
+        
+        if not self.tree.get_children():  # Verifica si hay productos en el Treeview
+            self.error_label.configure(text="No hay productos en la venta.", text_color="#FF0000")
+            return
+    
         self.ganancia_total = 0
         self.vendedor_id = self.user.vendedorID
+        self.vendedor_nombre = self.user.usuario
         
         for item in self.tree.get_children():
             valores = self.tree.item(item)["values"]
@@ -405,7 +411,8 @@ class DetallesApp():
             
             self.ganancia_total += (producto.precio - producto.costo) * cantidad
             
-        venta, error = self.crud_venta.crear_venta(self.total, self.ganancia_total, self.vendedor_id)
+            
+        venta, error = self.crud_venta.crear_venta(self.total, self.ganancia_total, self.vendedor_id, self.vendedor_nombre)
         
         if venta is None:
             print(f"Error al crear la venta")  
@@ -433,7 +440,7 @@ class DetallesApp():
             self.error_label.configure(text="Venta finalizada con éxito.")
             
             self.tree.delete(*self.tree.get_children())
-
+            self.actualizar_total_venta()
             
         
       
