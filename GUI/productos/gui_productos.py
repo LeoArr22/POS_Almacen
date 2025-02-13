@@ -18,21 +18,39 @@ class ProductosApp:
         self.ventana.configure(bg="#1C2124")
         self.frame_principal = ctk.CTkFrame(self.ventana, width=850, height=750, fg_color="#1C2124")
         self.frame_principal.place(x=0, y=0, relwidth=1, relheight=1)
+        
+        self.frame_principal.columnconfigure(0, weight=1)  # Expandir en el ancho
+        self.frame_principal.rowconfigure(0, weight=0)  # Fila para el frame superior
+        self.frame_principal.rowconfigure(1, weight=1)  # Fila para el contenido principal
 
-### BARRA DE NAVEGACION ###
+        # Frame superior (primera fila)
+        self.frame_superior = ctk.CTkFrame(self.frame_principal, fg_color="#2E3B4E")
+        self.frame_superior.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+
+    
+       
+
+        ### BARRA DE NAVEGACIÓN ###
+        self.frame_superior.columnconfigure(0, weight=3)  # Más espacio para el título
+        self.frame_superior.columnconfigure(1, weight=1)  # Menos espacio para los botones
+        self.frame_superior.columnconfigure(2, weight=1)
+        self.frame_superior.columnconfigure(3, weight=1)
+        self.frame_superior.columnconfigure(4, weight=3)
+        self.frame_superior.rowconfigure(0, weight=1)
+
         self.label_nav = ctk.CTkLabel(
-            self.frame_principal,
+            self.frame_superior,
             text="Menú de Navegación →",
-            fg_color="#1C2124",
-            font=("Helvetica", 20, "bold"),  # Tamaño del texto reducido para mayor ajuste
+            fg_color="transparent",
+            font=("Helvetica", 20, "bold"),
             text_color="#F3920F",
-            height=40,
+            height=40
         )
-        self.label_nav.place(x=10, y=10)
+        self.label_nav.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
-        # Botones superiores para navegación
+        # Botón "Vender"
         self.vender_button = ctk.CTkButton(
-            self.frame_principal,
+            self.frame_superior,
             text="Vender",
             command=lambda: proxima(self.ventana, "Vender"),
             border_width=2,
@@ -41,13 +59,14 @@ class ProductosApp:
             font=("Helvetica", 16, "bold"),
             hover_color="#2C353A",
             border_color="#F3920F",
-            width=40,
+            width=100,
             height=40
         )
-        self.vender_button.place(x=250, y=10)
+        self.vender_button.grid(row=0, column=1, padx=10, pady=5)
 
-        self.productos_button = ctk.CTkButton(
-            self.frame_principal,
+        # Botón "Usuarios"
+        self.usuarios_button = ctk.CTkButton(
+            self.frame_superior,
             text="Usuarios",
             command=lambda: proxima(self.ventana, "Usuarios"),
             border_width=2,
@@ -56,13 +75,14 @@ class ProductosApp:
             font=("Helvetica", 16, "bold"),
             hover_color="#2C353A",
             border_color="#F3920F",
-            width=40,
+            width=100,
             height=40
         )
-        self.productos_button.place(x=350, y=10)
+        self.usuarios_button.grid(row=0, column=2, padx=10, pady=5)
 
+        # Botón "Libro de Ventas"
         self.libro_ventas_button = ctk.CTkButton(
-            self.frame_principal,
+            self.frame_superior,
             text="Libro de Ventas",
             command=lambda: proxima(self.ventana, "libro_ventas"),
             border_width=2,
@@ -71,22 +91,23 @@ class ProductosApp:
             font=("Helvetica", 16, "bold"),
             hover_color="#2C353A",
             border_color="#F3920F",
-            width=40,
+            width=130,
             height=40
         )
-        self.libro_ventas_button.place(x=475, y=10)
+        self.libro_ventas_button.grid(row=0, column=3, padx=10, pady=5)
 
 ### TITULO ###
         # Label para el título, ajustado más cerca del listado
         self.label_titulo = ctk.CTkLabel(
-            self.frame_principal,
+            self.frame_superior,
             text="Gestor de Productos y Categorias",
-            fg_color="#1C2124",
+            fg_color="transparent",
             font=("Helvetica", 30, "bold"),  # Tamaño del texto reducido para mayor ajuste
             text_color="#F3920F",
             height=40,
         )
-        self.label_titulo.place(x=900, y=10, anchor="n")
+        self.label_titulo.grid(row=0 ,column=4, padx=10, pady=5)
+
 
 ### TREEVIEW VENTANA PRINCIPAL ###
         # Estilos del Treeview
@@ -204,10 +225,6 @@ class ProductosApp:
         # Boton Modificar Categorias
         self.crear_categoria_button = ctk.CTkButton(self.botones_frame, text="Modificar Categorias", command=self.modificar_categoria,  border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.crear_categoria_button.grid(row=3, column=6, padx=10, sticky="ew")
-
-
-        self.frame_principal.grid_rowconfigure(0, weight=1)
-        self.frame_principal.grid_columnconfigure(0, weight=1)
 
         self.ventana.mainloop()
 
