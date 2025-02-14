@@ -12,7 +12,7 @@ class CRUD_venta():
                 total_venta=total_venta,
                 ganancia_total=ganancia_total,
                 vendedorID=vendedor_id,
-                vendedor_nombre = vendedor_nombre
+                nombre_vendedor = vendedor_nombre
                 
             )
             session.add(nueva_venta)

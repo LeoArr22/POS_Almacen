@@ -84,7 +84,7 @@ class ProductosApp:
         self.libro_ventas_button = ctk.CTkButton(
             self.frame_superior,
             text="Libro de Ventas",
-            command=lambda: proxima(self.ventana, "libro_ventas"),
+            command=lambda: proxima(self.ventana, "Libro de Ventas"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",

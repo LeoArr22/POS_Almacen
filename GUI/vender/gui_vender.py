@@ -74,7 +74,7 @@ class DetallesApp():
             self.libro_ventas_button = ctk.CTkButton(
                 self.frame_principal,
                 text="Libro de Ventas",
-                command=lambda: proxima(self.ventana, "libro_ventas"),
+                command=lambda: proxima(self.ventana, "Libro de Ventas"),
                 border_width=2,
                 fg_color="#1C2124",
                 text_color="#F3920F",
@@ -439,8 +439,8 @@ class DetallesApp():
 
             self.error_label.configure(text="Venta finalizada con éxito.")
             
-            self.tree.delete(*self.tree.get_children())
-            self.actualizar_total_venta()
+        self.tree.delete(*self.tree.get_children())
+        self.actualizar_total_venta()
             
         
       

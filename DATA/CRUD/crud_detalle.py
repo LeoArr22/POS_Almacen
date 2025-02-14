@@ -41,7 +41,13 @@ class CRUD_detalle():
     def obtener_detalles_por_venta(self, venta_id):
         with self.Session() as session:
             try:
-                detalles = session.query(Detalle).filter_by(ventaID=venta_id).all()
+                detalles = session.query(
+                    Detalle.productoID,
+                    Detalle.ventaID,
+                    Detalle.cantidad,
+                    Detalle.total_prod,
+                    Producto.nombre.label('producto_nombre')
+                ).join(Producto, Detalle.productoID == Producto.productoID).filter(Detalle.ventaID == venta_id).all()
                 return detalles
             except Exception:
                 return None

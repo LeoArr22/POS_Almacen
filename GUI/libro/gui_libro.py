@@ -1,17 +1,14 @@
 import customtkinter as ctk
 from tkinter import ttk
 from data.sql.engine import Session
-from data.crud.crud_producto import CRUD_producto
-from data.crud.crud_categoria import CRUD_categoria
+from data.crud.crud_venta import CRUD_venta
+from data.crud.crud_detalle import CRUD_detalle
 from gui.util.generic import centrar_ventana, proxima
-from models.models.modelo_producto import ModeloProducto
-from models.models.modelo_categoria import ModeloCategoria
 
 class LibroApp:
-### INIT - CONFIGURACION VENTANA ###
     def __init__(self):
         self.ventana = ctk.CTk()
-        self.ventana.title('Listado de Productos')
+        self.ventana.title('Listado de Ventas')
         centrar_ventana(self.ventana, 1200, 650)
         self.ventana.resizable(width=0, height=0)
 
@@ -19,25 +16,17 @@ class LibroApp:
         self.frame_principal = ctk.CTkFrame(self.ventana, width=850, height=750, fg_color="#1C2124")
         self.frame_principal.place(x=0, y=0, relwidth=1, relheight=1)
         
-        self.frame_principal.columnconfigure(0, weight=1)  # Expandir en el ancho
-        self.frame_principal.rowconfigure(0, weight=0)  # Fila para el frame superior
-        self.frame_principal.rowconfigure(1, weight=1)  # Fila para el contenido principal
-        self.frame_principal.rowconfigure(2, weight=1)
+        self.frame_principal.columnconfigure(0, weight=1)
+        self.frame_principal.rowconfigure(0, weight=0)
+        self.frame_principal.rowconfigure(1, weight=1)
 
-        # Frame superior (primera fila)
+        # Frame superior
         self.frame_superior = ctk.CTkFrame(self.frame_principal, fg_color="#2E3B4E")
-        self.frame_superior.grid(row=0, column=0, sticky="nsew", padx=10, pady=5)
+        self.frame_superior.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
 
-        ### FRAME PARA CAMPOS Y BOTONES ####
-        self.botones_frame = ctk.CTkFrame(self.frame_principal, fg_color="#1C2124")
-        self.botones_frame.grid(row=3, column=0, columnspan=3, sticky="ew", padx=10, pady=5)
-        self.botones_frame.grid_rowconfigure(1, weight=1)
-        self.botones_frame.grid_columnconfigure(3, weight=1)
-       
-
-        ### BARRA DE NAVEGACIÓN ###
-        self.frame_superior.columnconfigure(0, weight=3)  # Más espacio para el título
-        self.frame_superior.columnconfigure(1, weight=1)  # Menos espacio para los botones
+        # Barra de navegación
+        self.frame_superior.columnconfigure(0, weight=3)
+        self.frame_superior.columnconfigure(1, weight=1)
         self.frame_superior.columnconfigure(2, weight=1)
         self.frame_superior.columnconfigure(3, weight=1)
         self.frame_superior.columnconfigure(4, weight=3)
@@ -53,11 +42,11 @@ class LibroApp:
         )
         self.label_nav.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
-        # Botón "Vender"
-        self.vender_button = ctk.CTkButton(
+        # Botón "Productos"
+        self.productos_button = ctk.CTkButton(
             self.frame_superior,
-            text="Vender",
-            command=lambda: proxima(self.ventana, "Vender"),
+            text="Productos",
+            command=lambda: proxima(self.ventana, "Productos"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
@@ -67,7 +56,7 @@ class LibroApp:
             width=100,
             height=40
         )
-        self.vender_button.grid(row=0, column=1, padx=10, pady=5)
+        self.productos_button.grid(row=0, column=1, padx=10, pady=5)
 
         # Botón "Usuarios"
         self.usuarios_button = ctk.CTkButton(
@@ -85,37 +74,34 @@ class LibroApp:
         )
         self.usuarios_button.grid(row=0, column=2, padx=10, pady=5)
 
-        # Botón "Libro de Ventas"
-        self.libro_ventas_button = ctk.CTkButton(
+        # Botón "Vender"
+        self.vender_button = ctk.CTkButton(
             self.frame_superior,
-            text="Libro de Ventas",
-            command=lambda: proxima(self.ventana, "libro_ventas"),
+            text="Vender",
+            command=lambda: proxima(self.ventana, "Vender"),
             border_width=2,
             fg_color="#1C2124",
             text_color="#F3920F",
             font=("Helvetica", 16, "bold"),
             hover_color="#2C353A",
             border_color="#F3920F",
-            width=130,
+            width=100,
             height=40
         )
-        self.libro_ventas_button.grid(row=0, column=3, padx=10, pady=5)
-
-### TITULO ###
-        # Label para el título, ajustado más cerca del listado
+        self.vender_button.grid(row=0, column=3, padx=10, pady=5)
+        
+        # Título
         self.label_titulo = ctk.CTkLabel(
             self.frame_superior,
-            text="Gestor de Productos y Categorias",
+            text="Gestor de Ventas",
             fg_color="transparent",
-            font=("Helvetica", 30, "bold"),  # Tamaño del texto reducido para mayor ajuste
+            font=("Helvetica", 30, "bold"),
             text_color="#F3920F",
             height=40,
         )
-        self.label_titulo.grid(row=0 ,column=4, padx=10, pady=5)
+        self.label_titulo.grid(row=0, column=4, padx=10, pady=5)
 
-
-### TREEVIEW VENTANA PRINCIPAL ###
-        # Estilos del Treeview
+        # Treeview para mostrar las ventas
         style = ttk.Style()
         style.theme_use("clam")
         style.configure("Treeview",
@@ -129,50 +115,181 @@ class LibroApp:
         style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 13, 'bold'))
         style.map("Treeview", background=[('selected', '#F3920F')])
 
-        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Categoria", "Nombre", "Precio", "Stock", "Costo", "Ganancia Unitaria", "Ganancia Acumulada", "CodBar"), show="headings", style="Treeview", height=15)
+        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Fecha", "Total Venta", "Ganancia Total", "Vendedor ID", "Vendedor Nombre"), show="headings", style="Treeview", height=15)
 
         self.tree.heading("ID", text="ID", command=lambda: self.ordenar_columna("ID"))
-        self.tree.heading("Categoria", text="Categoria", command=lambda: self.ordenar_columna("Categoria"))
-        self.tree.heading("Nombre", text="Nombre", command=lambda: self.ordenar_columna("Nombre"))
-        self.tree.heading("Precio", text="Precio", command=lambda: self.ordenar_columna("Precio"))
-        self.tree.heading("Stock", text="Stock", command=lambda: self.ordenar_columna("Stock"))
-        self.tree.heading("Costo", text="Costo", command=lambda: self.ordenar_columna("Costo"))
-        self.tree.heading("Ganancia Unitaria", text="Ganancia", command=lambda: self.ordenar_columna("Ganancia Unitaria")) 
-        self.tree.heading("Ganancia Acumulada", text="GananAcumu", command=lambda: self.ordenar_columna("Ganancia Acumulada"))
-        self.tree.heading("CodBar", text="CodBar", command=lambda: self.ordenar_columna("CodBar"))
+        self.tree.heading("Fecha", text="Fecha", command=lambda: self.ordenar_columna("Fecha"))
+        self.tree.heading("Total Venta", text="Total Venta", command=lambda: self.ordenar_columna("Total Venta"))
+        self.tree.heading("Ganancia Total", text="Ganancia Total", command=lambda: self.ordenar_columna("Ganancia Total"))
+        self.tree.heading("Vendedor ID", text="Vendedor ID", command=lambda: self.ordenar_columna("Vendedor ID"))
+        self.tree.heading("Vendedor Nombre", text="Vendedor Nombre", command=lambda: self.ordenar_columna("Vendedor Nombre"))
 
+        self.tree.grid(row=3, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
 
-        # Agregamos el Treeview al grid
-        self.tree.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
+        self.tree.column("ID", anchor="center", width=10)
+        self.tree.column("Fecha", width=100, minwidth=100)
+        self.tree.column("Total Venta", width=100)
+        self.tree.column("Ganancia Total", width=100)
+        self.tree.column("Vendedor ID", width=100)
+        self.tree.column("Vendedor Nombre", width=100)
 
-        # Ajustar tamaños de columnas
-        self.tree.column("ID", anchor="center", width=10)  
-        self.tree.column("Categoria", width=100, minwidth=100)  
-        self.tree.column("Nombre", width=100)
-        self.tree.column("Precio", width=40)
-        self.tree.column("Stock", width=30)
-        self.tree.column("Costo", width=40)
-        self.tree.column("Ganancia Unitaria", width=80, minwidth=70)  
-        self.tree.column("Ganancia Acumulada", width=90, minwidth=80)  
-        self.tree.column("CodBar", width=100, minwidth=90)
-
-
-
-### SCROLLBAR ###
+        # Scrollbar
         self.scrollbar = ctk.CTkScrollbar(self.frame_principal, orientation="vertical", command=self.tree.yview)
-        self.scrollbar.grid(row=1, column=3, sticky="ns")
+        self.scrollbar.grid(row=3, column=3, sticky="ns")
         self.tree.configure(yscrollcommand=self.scrollbar.set)
 
-### LABEL PARA MENSAJES DE ERROR ###
+        # Label para mensajes de error
         self.error_label = ctk.CTkLabel(self.frame_principal, text="", fg_color="#F3920F", font=("Helvetica", 14, "bold"), text_color="white", width=700, height=30)
         self.error_label.grid(row=2, column=0, columnspan=3, padx=10, pady=5, sticky="ew")
 
+        # Frame para campos y botones
+        self.botones_frame = ctk.CTkFrame(self.frame_principal, height=50, fg_color="#1C2124")
+        self.botones_frame.grid(row=1, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
+        self.botones_frame.grid_rowconfigure(5, weight=1)
+        self.botones_frame.grid_columnconfigure(7, weight=1)
 
+        # CRUD
+        self.crud_venta = CRUD_venta(Session)
+        self.crud_detalle = CRUD_detalle(Session)
+        self.cargar_datos()
 
-### BOTONES Y CAMPOS ###
-        # Botón Crear Producto
-        self.crear_producto_button = ctk.CTkButton(self.botones_frame, text="Crear Producto", border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.crear_producto_button.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
-        
-        
+        # Botones y campos
+        # Campo y botón para buscar por fecha
+        self.buscar_fecha_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Fecha (YYYY-MM-DD)", width=200)
+        self.buscar_fecha_entry.grid(row=2, column=1, padx=10, sticky="ew")
+
+        self.buscar_fecha_button = ctk.CTkButton(
+            self.botones_frame, text="Buscar por Fecha", command=self.buscar_por_fecha,
+            border_width=2, fg_color="#1C2124", text_color="white",
+            font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F"
+        )
+        self.buscar_fecha_button.grid(row=3, column=1, padx=10, sticky="ew")
+
+        # Botón Ver Detalle
+        self.ver_detalle_button = ctk.CTkButton(self.botones_frame, text="Ver Detalle", command=self.ver_detalle, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.ver_detalle_button.grid(row=3, column=4, padx=10, sticky="ew")
+
+        # Botón Ver Todas las Ventas
+        self.ver_todas_button = ctk.CTkButton(self.botones_frame, text="Ver Todas Las Ventas", command=self.cargar_datos, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.ver_todas_button.grid(row=2, column=4, padx=10, sticky="ew")
+
         self.ventana.mainloop()
+
+    def cargar_datos(self):
+        ventas = self.crud_venta.obtener_todas_las_ventas()
+        
+        # Limpiar el Treeview antes de cargar nuevos datos
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+        
+        self.datos = []
+        
+        # Si no hay ventas, mostrar mensaje en la primera fila
+        if not ventas:
+            self.tree.insert("", "end", values=("NO", "HAY VENTAS", "CARGADAS", "", "", ""), tags=("empty",))
+            return self.datos
+        
+        for index, venta in enumerate(ventas):
+            tag = "evenrow" if index % 2 == 0 else "oddrow"
+            
+            self.tree.insert(
+                "", "end",
+                values=(
+                    venta.ventaID, venta.fecha, venta.total_venta,
+                    venta.ganancia_total, venta.vendedorID, venta.nombre_vendedor
+                ),
+                tags=(tag,)
+            )
+            
+            # Guardar datos para ordenamiento
+            self.datos.append((venta.ventaID, venta.fecha, venta.total_venta, venta.ganancia_total, venta.vendedorID, venta.nombre_vendedor))
+        
+        return self.datos
+
+    def ordenar_columna(self, columna):
+        col_index = ["ID", "Fecha", "Total Venta", "Ganancia Total", "Vendedor ID", "Vendedor Nombre"].index(columna)
+        orden_inverso = getattr(self, "orden_inverso", False)
+        
+        self.datos.sort(key=lambda x: x[col_index], reverse=orden_inverso)
+        
+        self.orden_inverso = not orden_inverso
+        
+        # Limpiar y volver a cargar los datos ordenados
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+        for index, dato in enumerate(self.datos):
+            tag = "evenrow" if index % 2 == 0 else "oddrow"
+            self.tree.insert("", "end", values=dato, tags=(tag,))
+
+    def buscar_por_fecha(self):
+        fecha = self.buscar_fecha_entry.get().strip()
+        
+        if not fecha:
+            self.error_label.configure(text="Ingrese una fecha para buscar", text_color="#FF0000")
+            return
+
+        ventas = self.crud_venta.obtener_ventas_por_fecha(fecha)
+        
+        if not ventas:
+            self.error_label.configure(text="No se encontraron ventas para la fecha especificada", text_color="#FF0000")
+            return
+        
+        # Limpiar Treeview y mostrar solo las ventas encontradas
+        self.tree.delete(*self.tree.get_children())
+        for venta in ventas:
+            self.tree.insert("", "end", values=(venta.ventaID, venta.fecha, venta.total_venta, venta.ganancia_total, venta.vendedorID, venta.nombre_vendedor))
+
+    def ver_detalle(self):
+        selected_item = self.tree.selection()
+        if not selected_item:
+            self.error_label.configure(text="Por favor, selecciona una venta.", text_color="#FF0000")
+            return
+        venta_id = self.tree.item(selected_item)["values"][0]
+        
+        # Crear ventana emergente para mostrar el detalle de la venta
+        self.popup_detalle = ctk.CTkToplevel(self.ventana)
+        self.popup_detalle.title("Detalle de Venta")
+        self.popup_detalle.transient(self.ventana)
+        self.popup_detalle.grab_set()
+        centrar_ventana(self.popup_detalle, 600, 400)
+
+        self.popup_detalle.configure(bg="#1C2124", fg_color="#1C2124")
+        self.popup_detalle.grid_columnconfigure(0, weight=1)
+        self.popup_detalle.grid_columnconfigure(1, weight=1)
+
+        # Definir el estilo antes de crear el Treeview
+        # style_popup = ttk.Style()
+        # style_popup.theme_use("clam")
+        # style_popup.configure("Treeview_popup",
+        #                 background="#2C353A",
+        #                 fieldbackground="#2C353A",
+        #                 foreground="white",
+        #                 rowheight=30,
+        #                 borderwidth=2,
+        #                 relief="solid")
+        # style_popup.configure("Treeview_popup.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 12, 'bold'))
+        # style_popup.map("Treeview_popup", background=[('selected', '#F3920F')])
+
+        # Obtener detalles de la venta
+        detalles = self.crud_detalle.obtener_detalles_por_venta(venta_id)
+        
+        # Mostrar detalles en un Treeview
+        self.tree_popup = ttk.Treeview(self.popup_detalle, columns=("Producto", "Cantidad", "Total"), show="headings")
+        self.tree_popup.heading("Producto", text="Producto")
+        self.tree_popup.heading("Cantidad", text="Cantidad")
+        self.tree_popup.heading("Total", text="Total")
+        self.tree_popup.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
+
+        # Scrollbar
+        self.scrollbar_popup = ctk.CTkScrollbar(self.popup_detalle, orientation="vertical", command=self.tree_popup.yview)
+        self.scrollbar_popup.grid(row=1, column=3, sticky="ns")
+        self.tree_popup.configure(yscrollcommand=self.scrollbar_popup.set)
+
+        # Cargar detalles en el Treeview
+        for detalle in detalles:
+            self.tree_popup.insert("", "end", values=(detalle.producto_nombre, detalle.cantidad, detalle.total_prod))
+
+        # Botón para cerrar la ventana de detalle
+        self.cerrar_button = ctk.CTkButton(self.popup_detalle, text="Cerrar", command=self.popup_detalle.destroy, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.cerrar_button.grid(row=2, column=0, columnspan=3, pady=10)
+

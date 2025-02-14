@@ -45,4 +45,5 @@ def proxima(ventana, nombre, usuario=None):
         from gui.vender.gui_vender import DetallesApp
         destruir(ventana, lambda: DetallesApp(usuario))
     elif nombre=="Libro de Ventas":
-        pass     
+        from gui.libro.gui_libro import LibroApp
+        destruir(ventana, LibroApp)

@@ -59,7 +59,7 @@ class Venta(Base):
     total_venta = Column(Integer)
     ganancia_total = Column(Integer)
     vendedorID = Column(Integer, ForeignKey('Vendedor.vendedorID', ondelete="SET NULL"), nullable=True)  # Referencia a la tabla Vendedor
-    vendedor_nombre = Column(String, nullable=False)
+    nombre_vendedor = Column(String, nullable=False)
 
     # Relación con Vendedor y Detalle
     vendedor = relationship("Vendedor", back_populates="ventas")
