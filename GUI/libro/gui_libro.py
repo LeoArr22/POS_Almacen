@@ -3,7 +3,8 @@ from tkinter import ttk
 from data.sql.engine import Session
 from data.crud.crud_venta import CRUD_venta
 from data.crud.crud_detalle import CRUD_detalle
-from gui.util.generic import centrar_ventana, proxima
+from gui.util.generic import centrar_ventana
+from gui.util.nav import navegacion, boton_productos, boton_ventas, boton_usuarios, titulo, menu_label
 
 class LibroApp:
     def __init__(self):
@@ -20,86 +21,13 @@ class LibroApp:
         self.frame_principal.rowconfigure(0, weight=0)
         self.frame_principal.rowconfigure(1, weight=1)
 
-        # Frame superior
-        self.frame_superior = ctk.CTkFrame(self.frame_principal, fg_color="#2E3B4E")
-        self.frame_superior.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-
-        # Barra de navegación
-        self.frame_superior.columnconfigure(0, weight=3)
-        self.frame_superior.columnconfigure(1, weight=1)
-        self.frame_superior.columnconfigure(2, weight=1)
-        self.frame_superior.columnconfigure(3, weight=1)
-        self.frame_superior.columnconfigure(4, weight=3)
-        self.frame_superior.rowconfigure(0, weight=1)
-
-        self.label_nav = ctk.CTkLabel(
-            self.frame_superior,
-            text="Menú de Navegación →",
-            fg_color="transparent",
-            font=("Helvetica", 20, "bold"),
-            text_color="#F3920F",
-            height=40
-        )
-        self.label_nav.grid(row=0, column=0, padx=10, pady=5, sticky="w")
-
-        # Botón "Productos"
-        self.productos_button = ctk.CTkButton(
-            self.frame_superior,
-            text="Productos",
-            command=lambda: proxima(self.ventana, "Productos"),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=100,
-            height=40
-        )
-        self.productos_button.grid(row=0, column=1, padx=10, pady=5)
-
-        # Botón "Usuarios"
-        self.usuarios_button = ctk.CTkButton(
-            self.frame_superior,
-            text="Usuarios",
-            command=lambda: proxima(self.ventana, "Usuarios"),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=100,
-            height=40
-        )
-        self.usuarios_button.grid(row=0, column=2, padx=10, pady=5)
-
-        # Botón "Vender"
-        self.vender_button = ctk.CTkButton(
-            self.frame_superior,
-            text="Vender",
-            command=lambda: proxima(self.ventana, "Vender"),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=100,
-            height=40
-        )
-        self.vender_button.grid(row=0, column=3, padx=10, pady=5)
         
-        # Título
-        self.label_titulo = ctk.CTkLabel(
-            self.frame_superior,
-            text="Gestor de Ventas",
-            fg_color="transparent",
-            font=("Helvetica", 30, "bold"),
-            text_color="#F3920F",
-            height=40,
-        )
-        self.label_titulo.grid(row=0, column=4, padx=10, pady=5)
+        navegacion(self)
+        menu_label(self)
+        boton_productos(self, 1)
+        boton_usuarios(self, 2)
+        boton_ventas(self, 3)        
+        titulo(self, "Libro de Ventas", 4)
 
         # Treeview para mostrar las ventas
         style = ttk.Style()
@@ -115,14 +43,14 @@ class LibroApp:
         style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 13, 'bold'))
         style.map("Treeview", background=[('selected', '#F3920F')])
 
-        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Fecha", "Total Venta", "Ganancia Total", "Vendedor ID", "Vendedor Nombre"), show="headings", style="Treeview", height=15)
+        self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Fecha", "Total Venta", "Ganancia Total", "Vendedor Nombre", "Vendedor ID" ), show="headings", style="Treeview", height=15)
 
         self.tree.heading("ID", text="ID", command=lambda: self.ordenar_columna("ID"))
         self.tree.heading("Fecha", text="Fecha", command=lambda: self.ordenar_columna("Fecha"))
         self.tree.heading("Total Venta", text="Total Venta", command=lambda: self.ordenar_columna("Total Venta"))
         self.tree.heading("Ganancia Total", text="Ganancia Total", command=lambda: self.ordenar_columna("Ganancia Total"))
-        self.tree.heading("Vendedor ID", text="Vendedor ID", command=lambda: self.ordenar_columna("Vendedor ID"))
         self.tree.heading("Vendedor Nombre", text="Vendedor Nombre", command=lambda: self.ordenar_columna("Vendedor Nombre"))
+        self.tree.heading("Vendedor ID", text="Vendedor ID", command=lambda: self.ordenar_columna("Vendedor ID"))
 
         self.tree.grid(row=3, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
 
@@ -130,8 +58,8 @@ class LibroApp:
         self.tree.column("Fecha", width=100, minwidth=100)
         self.tree.column("Total Venta", width=100)
         self.tree.column("Ganancia Total", width=100)
-        self.tree.column("Vendedor ID", width=100)
         self.tree.column("Vendedor Nombre", width=100)
+        self.tree.column("Vendedor ID", width=100)
 
         # Scrollbar
         self.scrollbar = ctk.CTkScrollbar(self.frame_principal, orientation="vertical", command=self.tree.yview)
@@ -196,18 +124,18 @@ class LibroApp:
                 "", "end",
                 values=(
                     venta.ventaID, venta.fecha, venta.total_venta,
-                    venta.ganancia_total, venta.vendedorID, venta.nombre_vendedor
+                    venta.ganancia_total, venta.nombre_vendedor, venta.vendedorID
                 ),
                 tags=(tag,)
             )
             
             # Guardar datos para ordenamiento
-            self.datos.append((venta.ventaID, venta.fecha, venta.total_venta, venta.ganancia_total, venta.vendedorID, venta.nombre_vendedor))
+            self.datos.append((venta.ventaID, venta.fecha, venta.total_venta, venta.ganancia_total, venta.nombre_vendedor, venta.vendedorID))
         
         return self.datos
 
     def ordenar_columna(self, columna):
-        col_index = ["ID", "Fecha", "Total Venta", "Ganancia Total", "Vendedor ID", "Vendedor Nombre"].index(columna)
+        col_index = ["ID", "Fecha", "Total Venta", "Ganancia Total", "Vendedor Nombre""Vendedor ID"].index(columna)
         orden_inverso = getattr(self, "orden_inverso", False)
         
         self.datos.sort(key=lambda x: x[col_index], reverse=orden_inverso)
@@ -237,7 +165,7 @@ class LibroApp:
         # Limpiar Treeview y mostrar solo las ventas encontradas
         self.tree.delete(*self.tree.get_children())
         for venta in ventas:
-            self.tree.insert("", "end", values=(venta.ventaID, venta.fecha, venta.total_venta, venta.ganancia_total, venta.vendedorID, venta.nombre_vendedor))
+            self.tree.insert("", "end", values=(venta.ventaID, venta.fecha, venta.total_venta, venta.ganancia_total, venta.nombre_vendedor, venta.vendedorID))
 
     def ver_detalle(self):
         selected_item = self.tree.selection()

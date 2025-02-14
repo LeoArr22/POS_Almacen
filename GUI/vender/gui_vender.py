@@ -6,7 +6,9 @@ from data.crud.crud_producto import CRUD_producto
 from data.crud.crud_usuarios import CRUD_usuario
 from data.crud.crud_venta import CRUD_venta
 from data.crud.crud_detalle import CRUD_detalle
-from gui.util.generic import centrar_ventana, proxima
+from gui.util.generic import centrar_ventana
+from gui.util.nav import navegacion, boton_productos, boton_libro, boton_usuarios, titulo, menu_label
+
 
 
 
@@ -28,78 +30,17 @@ class DetallesApp():
         self.frame_principal.grid_rowconfigure(3, weight=1)  # Botones/campos busqueda productos
         self.frame_principal.grid_rowconfigure(4, weight=1)  # Total y boton finalizar
         
+        navegacion(self)
+
         if usuario == "admin":
-            ### BARRA DE NAVEGACION ###
-            self.label_nav = ctk.CTkLabel(
-                self.frame_principal,
-                text="Menú de Navegación →",
-                fg_color="#1C2124",
-                font=("Helvetica", 20, "bold"),  # Tamaño del texto reducido para mayor ajuste
-                text_color="#F3920F",
-                height=40,
-            )
-            self.label_nav.place(x=10, y=10)
-
-            # Botones superiores para navegación
-            self.vender_button = ctk.CTkButton(
-                self.frame_principal,
-                text="Productos",
-                command=lambda: proxima(self.ventana, "Productos"),
-                border_width=2,
-                fg_color="#1C2124",
-                text_color="#F3920F",
-                font=("Helvetica", 16, "bold"),
-                hover_color="#2C353A",
-                border_color="#F3920F",
-                width=40,
-                height=40
-            )
-            self.vender_button.place(x=250, y=10)
-
-            self.productos_button = ctk.CTkButton(
-                self.frame_principal,
-                text="Usuarios",
-                command=lambda: proxima(self.ventana, "Usuarios"),
-                border_width=2,
-                fg_color="#1C2124",
-                text_color="#F3920F",
-                font=("Helvetica", 16, "bold"),
-                hover_color="#2C353A",
-                border_color="#F3920F",
-                width=40,
-                height=40
-            )
-            self.productos_button.place(x=367, y=10)
-
-            self.libro_ventas_button = ctk.CTkButton(
-                self.frame_principal,
-                text="Libro de Ventas",
-                command=lambda: proxima(self.ventana, "Libro de Ventas"),
-                border_width=2,
-                fg_color="#1C2124",
-                text_color="#F3920F",
-                font=("Helvetica", 16, "bold"),
-                hover_color="#2C353A",
-                border_color="#F3920F",
-                width=40,
-                height=40
-            )
-            self.libro_ventas_button.place(x=475, y=10)
-
-    ### TITULO ###
-        # Label para el título, ajustado más cerca del listado
-        self.label_titulo = ctk.CTkLabel(
-            self.frame_principal,
-            text=f"Gestor de Ventas\nUsuario Logeado: {usuario}",
-            fg_color="#1C2124",
-            font= ("Helvetica", 20, "bold") if usuario == "admin" else ("Helvetica", 30 , "bold"),
-            text_color="#F3920F",
-            height=40,
-        )
-        if usuario == "admin":
-            self.label_titulo.place(x=900, y=10, anchor="n")
+            menu_label(self)
+            boton_productos(self, 1)
+            boton_usuarios(self, 2)
+            boton_libro(self, 3)        
+            titulo(self, f"Gestor de Ventas \n Usuario Logeado: {usuario}", 4)
         else:
-            self.label_titulo.place(x=600, y=10, anchor="n")
+            titulo(self, f"Gestor de Ventas \n Usuario Logeado: {usuario}", 2)
+
 
 
         # Treeview que ocupa toda la pantalla

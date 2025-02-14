@@ -54,10 +54,12 @@ class CRUD_usuario():
         with self.Session() as session:
             usuario_obj = self.obtener_usuario(usuario, session)
             if usuario_obj is not None:
+                if usuario_obj.usuario == "admin":
+                    return None, "No puede cambiar la contraseña del usuario admin"
                 usuario_obj.contrasena = nueva_contrasena
                 session.commit()
-                return usuario_obj
-            return None
+                return usuario_obj, ""
+            return None, "Usuario no encontrado"
 
     def eliminar_usuario(self, usuario):
         with self.Session() as session:

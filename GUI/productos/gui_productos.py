@@ -3,9 +3,11 @@ from tkinter import ttk
 from data.sql.engine import Session
 from data.crud.crud_producto import CRUD_producto
 from data.crud.crud_categoria import CRUD_categoria
-from gui.util.generic import centrar_ventana, proxima
+from gui.util.generic import centrar_ventana
+from gui.util.nav import navegacion, boton_libro, boton_ventas, boton_usuarios, titulo, menu_label
 from models.models.modelo_producto import ModeloProducto
 from models.models.modelo_categoria import ModeloCategoria
+
 
 class ProductosApp:
 ### INIT - CONFIGURACION VENTANA ###
@@ -23,90 +25,12 @@ class ProductosApp:
         self.frame_principal.rowconfigure(0, weight=0)  # Fila para el frame superior
         self.frame_principal.rowconfigure(1, weight=1)  # Fila para el contenido principal
 
-        # Frame superior (primera fila)
-        self.frame_superior = ctk.CTkFrame(self.frame_principal, fg_color="#2E3B4E")
-        self.frame_superior.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-
-    
-       
-
-        ### BARRA DE NAVEGACIÓN ###
-        self.frame_superior.columnconfigure(0, weight=3)  # Más espacio para el título
-        self.frame_superior.columnconfigure(1, weight=1)  # Menos espacio para los botones
-        self.frame_superior.columnconfigure(2, weight=1)
-        self.frame_superior.columnconfigure(3, weight=1)
-        self.frame_superior.columnconfigure(4, weight=3)
-        self.frame_superior.rowconfigure(0, weight=1)
-
-        self.label_nav = ctk.CTkLabel(
-            self.frame_superior,
-            text="Menú de Navegación →",
-            fg_color="transparent",
-            font=("Helvetica", 20, "bold"),
-            text_color="#F3920F",
-            height=40
-        )
-        self.label_nav.grid(row=0, column=0, padx=10, pady=5, sticky="w")
-
-        # Botón "Vender"
-        self.vender_button = ctk.CTkButton(
-            self.frame_superior,
-            text="Vender",
-            command=lambda: proxima(self.ventana, "Vender"),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=100,
-            height=40
-        )
-        self.vender_button.grid(row=0, column=1, padx=10, pady=5)
-
-        # Botón "Usuarios"
-        self.usuarios_button = ctk.CTkButton(
-            self.frame_superior,
-            text="Usuarios",
-            command=lambda: proxima(self.ventana, "Usuarios"),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=100,
-            height=40
-        )
-        self.usuarios_button.grid(row=0, column=2, padx=10, pady=5)
-
-        # Botón "Libro de Ventas"
-        self.libro_ventas_button = ctk.CTkButton(
-            self.frame_superior,
-            text="Libro de Ventas",
-            command=lambda: proxima(self.ventana, "Libro de Ventas"),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=130,
-            height=40
-        )
-        self.libro_ventas_button.grid(row=0, column=3, padx=10, pady=5)
-
-### TITULO ###
-        # Label para el título, ajustado más cerca del listado
-        self.label_titulo = ctk.CTkLabel(
-            self.frame_superior,
-            text="Gestor de Productos y Categorias",
-            fg_color="transparent",
-            font=("Helvetica", 30, "bold"),  # Tamaño del texto reducido para mayor ajuste
-            text_color="#F3920F",
-            height=40,
-        )
-        self.label_titulo.grid(row=0 ,column=4, padx=10, pady=5)
+        navegacion(self)
+        menu_label(self)
+        boton_libro(self, 1)
+        boton_usuarios(self, 2)
+        boton_ventas(self, 3)        
+        titulo(self, "Gestor de Productos y Categorias", 4)
 
 
 ### TREEVIEW VENTANA PRINCIPAL ###

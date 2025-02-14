@@ -2,90 +2,36 @@ import customtkinter as ctk
 from tkinter import ttk
 from data.sql.engine import Session
 from data.crud.crud_usuarios import CRUD_usuario
-from gui.util.generic import centrar_ventana, proxima
+from gui.util.generic import centrar_ventana
+from gui.util.nav import navegacion, boton_libro, boton_ventas, boton_productos, titulo, menu_label
 from models.models.modelo_usuario import ModeloUsuario
 
 class UsuariosApp:
     def __init__(self):
         self.ventana = ctk.CTk()
         self.ventana.title('Listado de Usuarios')
-        centrar_ventana(self.ventana, 700, 600)
+        centrar_ventana(self.ventana, 1200, 650)
         self.ventana.resizable(width=0, height=0)
 
         self.ventana.configure(bg="#1C2124")
         self.frame_principal = ctk.CTkFrame(self.ventana, width=700, height=600, fg_color="#1C2124")
         self.frame_principal.place(x=0, y=0, relwidth=1, relheight=1)
 
+                
+        self.frame_principal.grid_columnconfigure(0, weight=1)
+        self.frame_principal.grid_rowconfigure(0, weight=1)  # Barra de navegación
+        self.frame_principal.grid_rowconfigure(1, weight=3)  # Treeview 
+        self.frame_principal.grid_rowconfigure(2, weight=1)  # Label de error
+        self.frame_principal.grid_rowconfigure(3, weight=2)  # Botones/campos busqueda productos
+
+        navegacion(self)
+        menu_label(self)
+        boton_libro(self, 1)
+        boton_productos(self, 2)
+        boton_ventas(self, 3)        
+        titulo(self, "Gestor de Usuarios", 4)
+
         self.mostrar_contrasenas = False
-
-        
-        self.label_nav = ctk.CTkLabel(
-            self.frame_principal,
-            text="Menú de Navegación →",
-            fg_color="#1C2124",
-            font=("Helvetica", 20, "bold"),  # Tamaño del texto reducido para mayor ajuste
-            text_color="#F3920F",
-            height=40,
-        )
-        self.label_nav.place(x=10, y=10)
-
-        # Botones superiores para navegación
-        self.vender_button = ctk.CTkButton(
-            self.frame_principal,
-            text="Vender",
-            command=lambda: proxima(self.ventana,"Vender"),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=40,
-            height=40
-        )
-        self.vender_button.place(x=250, y=10)
-
-        self.productos_button = ctk.CTkButton(
-            self.frame_principal,
-            text="Productos",
-            command=lambda: proxima(self.ventana, "Productos"),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=40,
-            height=40
-        )
-        self.productos_button.place(x=350, y=10)
-
-        self.libro_ventas_button = ctk.CTkButton(
-            self.frame_principal,
-            text="Libro de Ventas",
-            command=lambda: proxima(self.ventana, "Libro de Ventas"),
-            border_width=2,
-            fg_color="#1C2124",
-            text_color="#F3920F",
-            font=("Helvetica", 16, "bold"),
-            hover_color="#2C353A",
-            border_color="#F3920F",
-            width=40,
-            height=40
-        )
-        self.libro_ventas_button.place(x=475, y=10)
-
-        # Label para el título, ajustado más cerca del listado
-        self.label_titulo = ctk.CTkLabel(
-            self.frame_principal,
-            text="Gestor de Usuarios",
-            fg_color="#1C2124",
-            font=("Helvetica", 30, "bold"),  # Tamaño del texto reducido para mayor ajuste
-            text_color="#F3920F",
-            height=40,
-        )
-        self.label_titulo.place(relx=0.5, y=80, anchor="n")
-
         # Estilos del Treeview
         style = ttk.Style()
         style.theme_use("clam")
@@ -117,7 +63,7 @@ class UsuariosApp:
         # Frame para campos y botones
         self.botones_frame = ctk.CTkFrame(self.frame_principal, height=50, fg_color="#1C2124")
         self.botones_frame.grid(row=3, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
-        self.botones_frame.grid_rowconfigure(0, weight=1)
+        self.botones_frame.columnconfigure(4, weight=1)
 
         # CRUD
         self.crud_usuario = CRUD_usuario(Session)
@@ -136,15 +82,15 @@ class UsuariosApp:
 
         # Campos para modificar contraseña (solo contraseña)
         self.modificar_contrasena_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nueva Contraseña", width=200, show="*")
-        self.modificar_contrasena_entry.grid(row=1, column=1, padx=20,  pady=5, sticky="w")
+        self.modificar_contrasena_entry.grid(row=1, column=2, padx=20,  pady=5, sticky="w")
 
         # Botón Modificar Contraseña
         self.modificar_usuario_button = ctk.CTkButton(self.botones_frame, text="Modificar Contraseña", command=self.modificar_contrasena, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.modificar_usuario_button.grid(row=2, column=1, padx=50, sticky="w")
+        self.modificar_usuario_button.grid(row=2, column=2, padx=50, sticky="w")
 
         # Botones Eliminar Usuario
         self.eliminar_usuario_button = ctk.CTkButton(self.botones_frame, text="Eliminar Usuario", command=self.eliminar_usuario, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.eliminar_usuario_button.grid(row=2, column=2, padx=20, sticky="e")
+        self.eliminar_usuario_button.grid(row=2, column=3, padx=20, sticky="e")
 
         self.toggle_password_button = ctk.CTkButton(
             self.botones_frame,
@@ -157,7 +103,7 @@ class UsuariosApp:
             hover_color="#F3920F",
             border_color="#F3920F"
         )
-        self.toggle_password_button.grid(row=0, column=2, padx=20, sticky="ew")
+        self.toggle_password_button.grid(row=0, column=3, padx=20, sticky="e")
 
         self.frame_principal.grid_rowconfigure(0, weight=1)
         self.frame_principal.grid_columnconfigure(0, weight=1)
@@ -227,15 +173,20 @@ class UsuariosApp:
             if not modelo_usuario.es_completo():
                 raise ValueError("La contraseña no es válida.")
 
-            error = self.crud_usuario.actualizar_contrasena(nombre_usuario, contrasena_nueva)
+            usuario_actualizado, error = self.crud_usuario.actualizar_contrasena(nombre_usuario, contrasena_nueva)
 
-            self.modificar_contrasena_entry.delete(0, "end")
-            self.datos = self.cargar_usuarios()
-            self.error_label.configure(text="Contraseña actualizada con éxito.", text_color="#00FF00")  # Mensaje de éxito
+            if usuario_actualizado:
+                self.modificar_contrasena_entry.delete(0, "end")
+                self.datos = self.cargar_usuarios()
+                self.error_label.configure(text="Contraseña actualizada con éxito.", text_color="#00FF00")  # Mensaje de éxito
+            else:
+                self.error_label.configure(text=error, text_color="#FF0000")  # Mensaje de error del CRUD
+
         except ValueError as e:
             self.error_label.configure(text=str(e), text_color="#FF0000")
         except Exception as e:
             self.error_label.configure(text=f"Error inesperado: {str(e)}", text_color="#FF0000")
+
 
 
     def eliminar_usuario(self):
