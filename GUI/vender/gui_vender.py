@@ -31,7 +31,6 @@ class DetallesApp():
         self.frame_principal.grid_rowconfigure(4, weight=1)  # Total y boton finalizar
         
         navegacion(self)
-
         if usuario == "admin":
             menu_label(self)
             boton_productos(self, 1)
