@@ -6,6 +6,6 @@ from gui.libro.gui_libro import LibroApp
 
 if __name__ == "__main__":
     # ProductosApp()
-    LoginApp()
-    # DetallesApp()
+    # LoginApp()
+    LibroApp()
 

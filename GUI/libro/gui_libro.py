@@ -92,14 +92,34 @@ class LibroApp:
             font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F"
         )
         self.buscar_fecha_button.grid(row=3, column=1, padx=10, sticky="ew")
+        
+        # Campo y botón para buscar por fecha POR RANGO
+        self.fecha_inicio_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Fecha (YYYY-MM-DD)", width=200)
+        self.fecha_inicio_entry.grid(row=1, column=2, padx=10, sticky="ew")
+        self.fecha_fin_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Fecha (YYYY-MM-DD)", width=200)
+        self.fecha_fin_entry.grid(row=2, column=2, padx=10, sticky="ew")
 
-        # Botón Ver Detalle
-        self.ver_detalle_button = ctk.CTkButton(self.botones_frame, text="Ver Detalle", command=self.ver_detalle, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.ver_detalle_button.grid(row=3, column=4, padx=10, sticky="ew")
+        self.fecha_por_rango_button = ctk.CTkButton(
+            self.botones_frame, text="Buscar por Rango de Fechas", command=self.buscar_por_rango_fechas,
+            border_width=2, fg_color="#1C2124", text_color="white",
+            font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F"
+        )
+        self.fecha_por_rango_button.grid(row=3, column=2, padx=10, sticky="ew")
 
         # Botón Ver Todas las Ventas
         self.ver_todas_button = ctk.CTkButton(self.botones_frame, text="Ver Todas Las Ventas", command=self.cargar_datos, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.ver_todas_button.grid(row=2, column=4, padx=10, sticky="ew")
+        self.ver_todas_button.grid(row=1, column=3, padx=10, sticky="ew")
+        
+        # Botón Ver Detalle
+        self.ver_detalle_button = ctk.CTkButton(self.botones_frame, text="Ver Detalle", command=self.ver_detalle, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.ver_detalle_button.grid(row=3, column=3, padx=10, sticky="ew")
+        
+        self.total_vendido_label = ctk.CTkLabel(self.botones_frame, text="Venta Total: $0.00", fg_color="#1C2124", font=("Helvetica", 25, "bold"), text_color="#F3920F")
+        self.total_vendido_label.grid(row=1, column=4, padx=10, sticky="ew")
+        
+        self.total_ganancias_label = ctk.CTkLabel(self.botones_frame, text="Ganancia Total: $0.00", fg_color="#1C2124", font=("Helvetica", 25, "bold"), text_color="#F3920F")
+        self.total_ganancias_label.grid(row=3, column=4, padx=10, sticky="ew")
+
 
         self.ventana.mainloop()
 
@@ -167,6 +187,26 @@ class LibroApp:
         for venta in ventas:
             self.tree.insert("", "end", values=(venta.ventaID, venta.fecha, venta.total_venta, venta.ganancia_total, venta.nombre_vendedor, venta.vendedorID))
 
+    def buscar_por_rango_fechas(self):
+        fecha_inicio = self.fecha_inicio_entry.get().strip()
+        fecha_fin = self.fecha_fin_entry.get().strip()
+
+        if not fecha_inicio or not fecha_fin:
+            self.error_label.configure(text="Ingrese ambas fechas para buscar", text_color="#FF0000")
+            return
+
+        ventas = self.crud_venta.obtener_ventas_por_rango_fechas(fecha_inicio, fecha_fin)
+
+        if not ventas:
+            self.error_label.configure(text="No se encontraron ventas en el rango especificado", text_color="#FF0000")
+            return
+
+        # Limpiar Treeview y mostrar solo las ventas encontradas
+        self.tree.delete(*self.tree.get_children())
+        for venta in ventas:
+            self.tree.insert("", "end", values=(venta.ventaID, venta.fecha, venta.total_venta, venta.ganancia_total, venta.nombre_vendedor, venta.vendedorID))
+
+
     def ver_detalle(self):
         selected_item = self.tree.selection()
         if not selected_item:
@@ -184,19 +224,6 @@ class LibroApp:
         self.popup_detalle.configure(bg="#1C2124", fg_color="#1C2124")
         self.popup_detalle.grid_columnconfigure(0, weight=1)
         self.popup_detalle.grid_columnconfigure(1, weight=1)
-
-        # Definir el estilo antes de crear el Treeview
-        # style_popup = ttk.Style()
-        # style_popup.theme_use("clam")
-        # style_popup.configure("Treeview_popup",
-        #                 background="#2C353A",
-        #                 fieldbackground="#2C353A",
-        #                 foreground="white",
-        #                 rowheight=30,
-        #                 borderwidth=2,
-        #                 relief="solid")
-        # style_popup.configure("Treeview_popup.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 12, 'bold'))
-        # style_popup.map("Treeview_popup", background=[('selected', '#F3920F')])
 
         # Obtener detalles de la venta
         detalles = self.crud_detalle.obtener_detalles_por_venta(venta_id)
