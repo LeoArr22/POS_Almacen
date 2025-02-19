@@ -377,7 +377,7 @@ class DetallesApp():
                 self.error_label.configure(text= f"Error al actualizar stock: {error}")
                 return
 
-            self.error_label.configure(text="Venta finalizada con éxito.")
+            self.error_label.configure(text="Venta finalizada con éxito.", text_color="#00FF00")
             
         self.tree.delete(*self.tree.get_children())
         self.actualizar_total_venta()
