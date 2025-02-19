@@ -10,7 +10,7 @@ class UsuariosApp:
     def __init__(self):
         self.ventana = ctk.CTk()
         self.ventana.title('Listado de Usuarios')
-        centrar_ventana(self.ventana, 1200, 650)
+        centrar_ventana(self.ventana, 900, 600)
         self.ventana.resizable(width=0, height=0)
 
         self.ventana.configure(bg="#1C2124")
@@ -39,10 +39,11 @@ class UsuariosApp:
                         background="#2C353A",
                         fieldbackground="#2C353A",
                         foreground="white",
-                        rowheight=25,
+                        rowheight=30,
+                        font=("Roboto", 18),
                         borderwidth=2,
                         relief="solid")
-        style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 12, 'bold'))
+        style.configure("Treeview.Heading", background="#1C2124", foreground="#F3920F", font=('Helvetica', 14, 'bold'))
         style.map("Treeview", background=[('selected', '#F3920F')])
 
         self.tree = ttk.Treeview(self.frame_principal, columns=("ID", "Usuario", "Contraseña"), show="headings", style="Treeview")
@@ -62,7 +63,7 @@ class UsuariosApp:
 
         # Frame para campos y botones
         self.botones_frame = ctk.CTkFrame(self.frame_principal, height=50, fg_color="#1C2124")
-        self.botones_frame.grid(row=3, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
+        self.botones_frame.grid(row=3, column=0, columnspan=4, sticky="ew", padx=10, pady=10)
         self.botones_frame.columnconfigure(4, weight=1)
 
         # CRUD
@@ -82,20 +83,32 @@ class UsuariosApp:
 
         # Campos para modificar contraseña (solo contraseña)
         self.modificar_contrasena_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nueva Contraseña", width=200, show="*")
-        self.modificar_contrasena_entry.grid(row=1, column=2, padx=20,  pady=5, sticky="w")
+        self.modificar_contrasena_entry.grid(row=1, column=1, padx=20,  pady=5, sticky="w")
 
         # Botón Modificar Contraseña
-        self.modificar_usuario_button = ctk.CTkButton(self.botones_frame, text="Modificar Contraseña", command=self.modificar_contrasena, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.modificar_usuario_button.grid(row=2, column=2, padx=50, sticky="w")
+        self.modificar_contrasena_button = ctk.CTkButton(self.botones_frame, text="Modificar Contraseña", command=self.modificar_contrasena, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.modificar_contrasena_button.grid(row=2, column=1, padx=50, sticky="w")
+        
+        # Campos para modificar nombre (solo nombre)
+        self.modificar_nombre_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nuevo Nombre", width=200)
+        self.modificar_nombre_entry.grid(row=1, column=2, padx=20,  pady=5, sticky="w")
+
+        # Botón Modificar Nombre
+        self.modificar_nombre_button = ctk.CTkButton(self.botones_frame, text="Modificar Nombre", command=self.modificar_nombre, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.modificar_nombre_button.grid(row=2, column=2, padx=50, sticky="w")
 
         # Botones Eliminar Usuario
         self.eliminar_usuario_button = ctk.CTkButton(self.botones_frame, text="Eliminar Usuario", command=self.eliminar_usuario, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.eliminar_usuario_button.grid(row=2, column=3, padx=20, sticky="e")
 
+        # Boton Ver contraseña
+        self.ver_contrasena_button = ctk.CTkButton(self.botones_frame, text="Mostrar / Ocultar Contraseña", command=self.mostrar_ocultar_contrasenas, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.ver_contrasena_button.grid(row=0, column=3, sticky="e")
+
         self.toggle_password_button = ctk.CTkButton(
             self.botones_frame,
             text="Mostrar Contraseña",
-            command=self.toggle_contrasenas,
+            command=self.mostrar_ocultar_contrasenas,
             border_width=2,
             fg_color="#1C2124",
             text_color="white",
@@ -103,7 +116,7 @@ class UsuariosApp:
             hover_color="#F3920F",
             border_color="#F3920F"
         )
-        self.toggle_password_button.grid(row=0, column=3, padx=20, sticky="e")
+        self.toggle_password_button.grid(row=0, column=4, padx=20, sticky="e")
 
         self.frame_principal.grid_rowconfigure(0, weight=1)
         self.frame_principal.grid_columnconfigure(0, weight=1)
@@ -133,8 +146,9 @@ class UsuariosApp:
         for row in self.tree.get_children():
             self.tree.delete(row)
         for index, dato in enumerate(self.datos):
+            contrasena_oculta = dato[2] if self.mostrar_contrasenas else "****"
             tag = "evenrow" if index % 2 == 0 else "oddrow"
-            self.tree.insert("", "end", values=dato, tags=(tag,))
+            self.tree.insert("", "end", values=(dato[0], dato[1], contrasena_oculta), tags=(tag,))
 
     def crear_usuario(self):
         usuario = self.usuario_entry.get()
@@ -186,6 +200,31 @@ class UsuariosApp:
             self.error_label.configure(text=str(e), text_color="#FF0000")
         except Exception as e:
             self.error_label.configure(text=f"Error inesperado: {str(e)}", text_color="#FF0000")
+            
+    def modificar_nombre(self):
+        nombre_nuevo = self.modificar_nombre_entry.get()
+        selected_item = self.tree.selection()
+
+        if not selected_item:
+            self.error_label.configure(text="Por favor, selecciona un usuario.", text_color="#FF0000")
+            return
+
+        nombre_usuario = self.tree.item(selected_item)["values"][1]
+
+        try:
+            usuario_actualizado, error = self.crud_usuario.actualizar_nombre(nombre_usuario, nombre_nuevo)
+
+            if usuario_actualizado:
+                self.modificar_nombre_entry.delete(0, "end")
+                self.datos = self.cargar_usuarios()
+                self.error_label.configure(text="Nombre actualizado con éxito.", text_color="#00FF00")  # Mensaje de éxito
+            else:
+                self.error_label.configure(text=error, text_color="#FF0000")  # Mensaje de error del CRUD
+
+        except ValueError as e:
+            self.error_label.configure(text=str(e), text_color="#FF0000")
+        except Exception as e:
+            self.error_label.configure(text=f"Error inesperado: {str(e)}", text_color="#FF0000")
 
 
 
@@ -207,7 +246,7 @@ class UsuariosApp:
         except Exception as e:
             self.error_label.configure(text=f"Error al eliminar el usuario: {str(e)}", text_color="#FF0000")
 
-    def toggle_contrasenas(self):
+    def mostrar_ocultar_contrasenas(self):
         self.mostrar_contrasenas = not self.mostrar_contrasenas
         self.datos = self.cargar_usuarios()
         texto = "Ocultar Contraseña" if self.mostrar_contrasenas else "Mostrar Contraseña"

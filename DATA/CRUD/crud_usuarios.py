@@ -14,20 +14,21 @@ class CRUD_usuario():
                 return nuevo_usuario, None
             return None, "Ese nombre de usuario ya está en uso"
 
-    def modificar_usuario(self, usuario, usuario_nuevo, contrasena_nueva):
+    def actualizar_nombre(self, usuario, usuario_nuevo):
         with self.Session() as session:
             usuario_obj = self.obtener_usuario(usuario, session)
+            nuevo_nombre = self.obtener_usuario(usuario_nuevo, session)
             
             if usuario_obj is None:
                 return None, "Usuario no encontrado"
+            
+            if nuevo_nombre is not None:
+                return None, "Ya existe un usuario con ese nombre"
 
-            if usuario_obj.usuario == 'admin' and usuario_nuevo != usuario_obj.usuario:
+            if usuario_obj.usuario == 'admin':
                 return None, "El usuario 'admin' no puede cambiar su nombre."
 
-            if usuario_nuevo:
-                usuario_obj.usuario = usuario_nuevo
-            if contrasena_nueva:
-                usuario_obj.contrasena = contrasena_nueva
+            usuario_obj.usuario = usuario_nuevo
 
             session.commit()
             return usuario_obj, None 
@@ -54,8 +55,6 @@ class CRUD_usuario():
         with self.Session() as session:
             usuario_obj = self.obtener_usuario(usuario, session)
             if usuario_obj is not None:
-                if usuario_obj.usuario == "admin":
-                    return None, "No puede cambiar la contraseña del usuario admin"
                 usuario_obj.contrasena = nueva_contrasena
                 session.commit()
                 return usuario_obj, ""
