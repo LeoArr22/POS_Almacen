@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter.font import BOLD
-from gui.util.generic import centrar_ventana, leer_imagen, destruir
+from gui.util.generic import centrar_ventana, leer_imagen, proxima
 from gui.usuarios.gui_usuarios import UsuariosApp
 from gui.productos.gui_productos import ProductosApp
 from datetime import datetime
@@ -51,6 +51,7 @@ class MasterPanel:
             corner_radius=20,
             border_width=2,
             border_color=boton_borde,
+            command=lambda: proxima(ventana, "Vender")
         )
         self.boton_vender.place(relx=0.75, rely=0.2, anchor="center")
 
@@ -67,7 +68,7 @@ class MasterPanel:
             corner_radius=20,
             border_width=2,
             border_color=boton_borde,
-            command=lambda: destruir(ventana, UsuariosApp)
+            command=lambda: proxima(ventana, "Usuarios")
         )
         self.boton_usuarios.place(relx=0.75, rely=0.4, anchor="center")
 
@@ -84,7 +85,7 @@ class MasterPanel:
             corner_radius=20,
             border_width=2,
             border_color=boton_borde,
-            command=lambda: destruir(ventana, ProductosApp)
+            command=lambda: proxima(ventana, "Productos")
         )
         self.boton_productos.place(relx=0.75, rely=0.6, anchor="center")
 
@@ -101,6 +102,7 @@ class MasterPanel:
             corner_radius=20,
             border_width=2,
             border_color=boton_borde,
+            command=lambda: proxima(ventana, "Libro de Ventas")
         )
         self.boton_libro_ventas.place(relx=0.75, rely=0.8, anchor="center")
 
