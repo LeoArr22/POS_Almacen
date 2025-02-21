@@ -27,6 +27,11 @@ class CRUD_venta():
                 return venta, None
             except NoResultFound:
                 return None, "No se encontró la venta"
+            
+    def obtener_todas_las_ventas(self):
+        with self.Session() as session:
+            ventas = session.query(Venta).all()
+            return ventas
 
     def obtener_ventas_por_fecha(self, fecha):
         with self.Session() as session:
@@ -37,12 +42,12 @@ class CRUD_venta():
         with self.Session() as session:
             ventas = session.query(Venta).filter(Venta.fecha.between(fecha_inicio, fecha_fin)).all()
             return ventas
-    
 
-    def obtener_todas_las_ventas(self):
+    def obtener_ventas_por_nombre_vendedor(self, nombre_vendedor):
         with self.Session() as session:
-            ventas = session.query(Venta).all()
+            ventas = session.query(Venta).filter_by(nombre_vendedor=nombre_vendedor).all()
             return ventas
+
 
     def actualizar_venta(self, venta_id, nuevo_total, nueva_ganancia):
         with self.Session() as session:

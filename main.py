@@ -6,8 +6,8 @@ from gui.usuarios.gui_usuarios import UsuariosApp
 
 
 if __name__ == "__main__":
-    # LibroApp()
+    LibroApp()
     # ProductosApp()
     # LoginApp()
-    DetallesApp()
+    # DetallesApp()
 
