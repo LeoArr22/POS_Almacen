@@ -20,6 +20,7 @@ class LibroApp:
         self.page_size = 15
         self.current_page = 0
         
+        
         self.frame_principal.columnconfigure(0, weight=1)
         self.frame_principal.rowconfigure(0, weight=0)
         self.frame_principal.rowconfigure(1, weight=2)
@@ -84,13 +85,16 @@ class LibroApp:
         # Frame para campos y botones inferiores
         self.botones_frame_inferior = ctk.CTkFrame(self.frame_principal, height=50, fg_color="#1C2124")
         self.botones_frame_inferior.grid(row=4, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
-        self.botones_frame_inferior.grid_rowconfigure(5, weight=1)
+        self.botones_frame_inferior.grid_rowconfigure(2, weight=1)
+        self.botones_frame_inferior.grid_columnconfigure(0, weight=3)
+        self.botones_frame_inferior.grid_columnconfigure(1, weight=1)
+        self.botones_frame_inferior.grid_columnconfigure(2, weight=2)
         self.botones_frame_inferior.grid_columnconfigure(3, weight=1)
-
+        self.botones_frame_inferior.grid_columnconfigure(4, weight=1)
+        
         # CRUD
         self.crud_venta = CRUD_venta(Session)
         self.crud_detalle = CRUD_detalle(Session)
-        self.cargar_datos()
 
 
         #BOTONES FRAME SUPERIOR
@@ -138,26 +142,51 @@ class LibroApp:
         self.ver_detalle_button = ctk.CTkButton(self.botones_frame, text="Ver Detalle", command=self.ver_detalle, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.ver_detalle_button.grid(row=3, column=3, padx=10, sticky="ew")
         
+        # Botón EXPORTAR
+        self.exportar_button = ctk.CTkButton(self.botones_frame, text="Generar Reporte", 
+                                            # command=self.exportar_datos, 
+                                            border_width=2, 
+                                            fg_color="#1C2124", 
+                                            text_color="white", 
+                                            font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.exportar_button.grid(row=3, column=5, padx=10, sticky="ew")
+        
         
         #BOTONES FRAME INFERIOR
         #Totales
-        self.total_vendido_label = ctk.CTkLabel(self.botones_frame_inferior, text="Venta Total: $0.00", fg_color="#1C2124", font=("Helvetica", 25, "bold"), text_color="#F3920F")
-        self.total_vendido_label.grid(row=0, column=0, padx=10, sticky="ew")
-        
-        self.total_ganancias_label = ctk.CTkLabel(self.botones_frame_inferior, text="Ganancia Total: $0.00", fg_color="#1C2124", font=("Helvetica", 25, "bold"), text_color="#F3920F")
-        self.total_ganancias_label.grid(row=1, column=0, padx=10, sticky="ew")
+        self.total_vendido_label = ctk.CTkLabel(self.botones_frame_inferior, text="Venta Total: $0", fg_color="#1C2124", font=("Helvetica", 25, "bold"), text_color="#F3920F")
+        self.total_vendido_label.grid(row=0, column=0, padx=10, sticky="w")
+
+        self.total_ganancias_label = ctk.CTkLabel(self.botones_frame_inferior, text="Ganancia Total: $0", fg_color="#1C2124", font=("Helvetica", 25, "bold"), text_color="#F3920F")
+        self.total_ganancias_label.grid(row=1, column=0, padx=10, sticky="w")
+
+       # Columna vacía para separación
+        self.empty_label = ctk.CTkLabel(self.botones_frame_inferior, text="", fg_color="#1C2124")
+        self.empty_label.grid(row=0, column=1, rowspan=2, sticky="w")
+        # Botones de navegación
+        self.prev_button = ctk.CTkButton(self.botones_frame_inferior, text="🢀", 
+                                        command=self.prev_page, 
+                                        border_width=2, 
+                                        fg_color="#1C2124", 
+                                        text_color="white", 
+                                        font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.prev_button.grid(row=0, column=4, padx=(0, 1), sticky="e")
+
+        self.next_button = ctk.CTkButton(self.botones_frame_inferior, text="🢂", 
+                                        command=self.next_page, 
+                                        border_width=2, 
+                                        fg_color="#1C2124",
+                                        text_color="white",
+                                        font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
+        self.next_button.grid(row=0, column=5, padx=(0, 10), sticky="e")
 
 
-        # Botones de navegacion
-        self.prev_button = ctk.CTkButton(self.botones_frame_inferior, text="🢀", command=self.prev_page, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.prev_button.grid(row=0, column=1, padx=10, sticky="ew")
-        
-        self.next_button = ctk.CTkButton(self.botones_frame_inferior, text="🢂", command=self.next_page, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.next_button.grid(row=0, column=2, padx=10, sticky="ew")
-
+        self.cargar_datos()
         self.ventana.mainloop()
 
-    def cargar_datos(self, ventas=None):        
+    def cargar_datos(self, ventas=None):    
+        total_vendido = 0
+        total_ganancia = 0    
         # Limpiar el Treeview antes de cargar nuevos datos
         for row in self.tree.get_children():
             self.tree.delete(row)
@@ -167,14 +196,18 @@ class LibroApp:
         # Si no hay ventas, mostrar mensaje en la primera fila
         if not ventas:
             self.tree.insert("", "end", values=("POR FAVOR", "      APLIQUE UN", "      FILTRO", "      PARA VER", "        LAS VENTAS", ""), tags=("empty",))
+            self.actualizar_totales(total_vendido, total_ganancia)
             return self.datos
         
         for index, venta in enumerate(ventas):
             tag = "evenrow" if index % 2 == 0 else "oddrow"
             
             self.datos.append((venta.ventaID, venta.fecha, venta.total_venta, venta.ganancia_total, venta.nombre_vendedor, venta.vendedorID))
+            total_vendido += venta.total_venta
+            total_ganancia += venta.ganancia_total
         
         self.update_treeview()
+        self.actualizar_totales(total_vendido, total_ganancia)
         return self.datos
 
     def update_treeview(self):
@@ -199,6 +232,10 @@ class LibroApp:
         if self.current_page > 0:
             self.current_page -= 1
             self.update_treeview()
+
+    def actualizar_totales(self, total_vendido, total_ganancia):
+        self.total_vendido_label.configure(text=f"Venta Total: ${total_vendido}")
+        self.total_ganancias_label.configure(text=f"Ganancia Total: ${total_ganancia}")
 
     def ordenar_columna(self, columna):
         col_index = ["ID", "Fecha", "Total Venta", "Ganancia Total", "Vendedor Nombre""Vendedor ID"].index(columna)
