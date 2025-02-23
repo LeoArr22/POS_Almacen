@@ -32,11 +32,6 @@ class CRUD_venta():
         with self.Session() as session:
             ventas = session.query(Venta).all()
             return ventas
-
-    def obtener_ventas_por_fecha(self, fecha):
-        with self.Session() as session:
-            ventas = session.query(Venta).filter_by(fecha=fecha).all()
-            return ventas
     
     def obtener_ventas_por_rango_fechas(self, fecha_inicio, fecha_fin):
         with self.Session() as session:
@@ -48,6 +43,17 @@ class CRUD_venta():
             ventas = session.query(Venta).filter_by(nombre_vendedor=nombre_vendedor).all()
             return ventas
 
+    def obtener_ventas_por_rango_fechas_y_nombre_vendedor(self, nombre_vendedor, fecha_inicio, fecha_fin):        
+        with self.Session() as session:
+            ventas = (
+                session.query(Venta)
+                .filter(
+                    Venta.fecha.between(fecha_inicio, fecha_fin),  # Filtra por rango de fechas
+                    Venta.nombre_vendedor == nombre_vendedor  # Filtra por nombre del vendedor
+                )
+                .all()
+            )
+            return ventas
 
     def actualizar_venta(self, venta_id, nuevo_total, nueva_ganancia):
         with self.Session() as session:

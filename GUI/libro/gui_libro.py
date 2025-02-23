@@ -22,11 +22,11 @@ class LibroApp:
         
         
         self.frame_principal.columnconfigure(0, weight=1)
-        self.frame_principal.rowconfigure(0, weight=0)
-        self.frame_principal.rowconfigure(1, weight=2)
-        self.frame_principal.rowconfigure(2, weight=1)
-        self.frame_principal.rowconfigure(3, weight=3)
-        self.frame_principal.rowconfigure(4, weight=2)
+        self.frame_principal.rowconfigure(0, weight=0) #Nav Bar
+        self.frame_principal.rowconfigure(1, weight=2) #Botones superiores
+        self.frame_principal.rowconfigure(2, weight=1) #Error label
+        self.frame_principal.rowconfigure(3, weight=3) #Treeview
+        self.frame_principal.rowconfigure(4, weight=1) #Botones inferiores
 
 
         
@@ -99,16 +99,6 @@ class LibroApp:
 
         #BOTONES FRAME SUPERIOR
         # Botones y campos
-        # Campo y botón para buscar por fecha
-        self.buscar_fecha_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Fecha (YYYY-MM-DD)", width=200)
-        self.buscar_fecha_entry.grid(row=2, column=1, padx=10, sticky="ew")
-
-        self.buscar_fecha_button = ctk.CTkButton(
-            self.botones_frame, text="Buscar por Fecha", command=self.buscar_por_fecha,
-            border_width=2, fg_color="#1C2124", text_color="white",
-            font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F"
-        )
-        self.buscar_fecha_button.grid(row=3, column=1, padx=10, sticky="ew")
         
         # Campo y botón para buscar por fecha POR RANGO
         self.fecha_inicio_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Fecha (YYYY-MM-DD)", width=200)
@@ -133,14 +123,22 @@ class LibroApp:
             font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F"
         )
         self.buscar_vendedor_button.grid(row=3, column=2, padx=10, sticky="ew")
+        
+        # boton para buscar por vendedor y fechas
+        self.buscar_vendedor_button = ctk.CTkButton(
+            self.botones_frame, text="Buscar por Vendedor y Fecha", command=self.buscar_por_rango_fechas_y_nombre_vendedor,
+            border_width=2, fg_color="#1C2124", text_color="white",
+            font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F"
+        )
+        self.buscar_vendedor_button.grid(row=3, column=3, padx=10, sticky="ew")
 
         # Botón Ver borrar lista
         self.borrar_lista_button = ctk.CTkButton(self.botones_frame, text="Borrar Listado", command=self.cargar_datos, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.borrar_lista_button.grid(row=1, column=3, padx=10, sticky="ew")
+        self.borrar_lista_button.grid(row=3, column=4, padx=10, sticky="ew")
         
         # Botón Ver Detalle
         self.ver_detalle_button = ctk.CTkButton(self.botones_frame, text="Ver Detalle", command=self.ver_detalle, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.ver_detalle_button.grid(row=3, column=3, padx=10, sticky="ew")
+        self.ver_detalle_button.grid(row=3, column=5, padx=10, sticky="ew")
         
         # Botón EXPORTAR
         self.exportar_button = ctk.CTkButton(self.botones_frame, text="Generar Reporte", 
@@ -149,7 +147,7 @@ class LibroApp:
                                             fg_color="#1C2124", 
                                             text_color="white", 
                                             font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.exportar_button.grid(row=3, column=5, padx=10, sticky="ew")
+        self.exportar_button.grid(row=3, column=6, padx=(40, 0), sticky="ew")
         
         
         #BOTONES FRAME INFERIOR
@@ -208,6 +206,7 @@ class LibroApp:
         
         self.update_treeview()
         self.actualizar_totales(total_vendido, total_ganancia)
+        self.error_label.configure(text="", text_color="#FF0000")
         return self.datos
 
     def update_treeview(self):
@@ -254,28 +253,17 @@ class LibroApp:
 
         self.update_treeview()
 
-    def buscar_por_fecha(self):
-        fecha = self.buscar_fecha_entry.get().strip()
-        
-        if not fecha:
-            self.error_label.configure(text="Ingrese una fecha para buscar", text_color="#FF0000")
-            return
-
-        ventas = self.crud_venta.obtener_ventas_por_fecha(fecha)
-        
-        if not ventas:
-            self.error_label.configure(text="No se encontraron ventas para la fecha especificada", text_color="#FF0000")
-            return
-        
-        self.cargar_datos(ventas)
 
     def buscar_por_rango_fechas(self):
         fecha_inicio = self.fecha_inicio_entry.get().strip()
-        fecha_fin = self.fecha_fin_entry.get().strip()
-
-        if not fecha_inicio or not fecha_fin:
-            self.error_label.configure(text="Ingrese ambas fechas para buscar", text_color="#FF0000")
+        fecha_fin = self.fecha_fin_entry.get().strip() or None
+        
+        if not fecha_inicio:
+            self.error_label.configure(text="Debe ingresar al menos, la fecha de inicio", text_color="#FF0000")
             return
+
+        if fecha_fin is None:
+            fecha_fin = fecha_inicio
 
         ventas = self.crud_venta.obtener_ventas_por_rango_fechas(fecha_inicio, fecha_fin)
 
@@ -299,6 +287,26 @@ class LibroApp:
             return
         
         self.cargar_datos(ventas)
+        
+    def buscar_por_rango_fechas_y_nombre_vendedor(self):
+        fecha_inicio = self.fecha_inicio_entry.get().strip()
+        fecha_fin = self.fecha_fin_entry.get().strip() or None
+        vendedor_nombre = self.buscar_vendedor_entry.get().strip()
+            
+        if not fecha_inicio or not vendedor_nombre:
+            self.error_label.configure(text="Debe ingresar al menos, la fecha de inicio y el nombre del vendedor", text_color="#FF0000")
+            return
+         
+        if fecha_fin is None:
+            fecha_fin = fecha_inicio
+        
+        ventas = self.crud_venta.obtener_ventas_por_rango_fechas_y_nombre_vendedor(vendedor_nombre, fecha_inicio, fecha_fin)
+        
+        if not ventas:
+            self.error_label.configure(text="No se encontraron ventas para el vendedor en el rango especificado", text_color="#FF0000")
+            return
+            
+        self.cargar_datos(ventas)    
         
         
         
