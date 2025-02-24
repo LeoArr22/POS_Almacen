@@ -1,10 +1,21 @@
+import os
+
 import customtkinter as ctk
 from tkinter import ttk
+
+from gui.util.generic import centrar_ventana
+from gui.util.nav import navegacion, boton_productos, boton_ventas, boton_usuarios, titulo, menu_label
+
 from data.sql.engine import Session
 from data.crud.crud_venta import CRUD_venta
 from data.crud.crud_detalle import CRUD_detalle
-from gui.util.generic import centrar_ventana
-from gui.util.nav import navegacion, boton_productos, boton_ventas, boton_usuarios, titulo, menu_label
+
+import pandas as pd
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import ParagraphStyle
+
 
 class LibroApp:
     def __init__(self):
@@ -140,14 +151,17 @@ class LibroApp:
         self.ver_detalle_button = ctk.CTkButton(self.botones_frame, text="Ver Detalle", command=self.ver_detalle, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.ver_detalle_button.grid(row=3, column=5, padx=10, sticky="ew")
         
-        # Botón EXPORTAR
+        # Botón y campo Generar Reporte
+        self.exportar_entry = ctk.CTkEntry(self.botones_frame, placeholder_text="Nombrar Archivo", width=200)
+        self.exportar_entry.grid(row=2, column=6, padx=10, sticky="ew")
+        
         self.exportar_button = ctk.CTkButton(self.botones_frame, text="Generar Reporte", 
-                                            # command=self.exportar_datos, 
+                                            command=lambda: self.exportar_ventas_pandas_pdf(self.datos),
                                             border_width=2, 
                                             fg_color="#1C2124", 
                                             text_color="white", 
                                             font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
-        self.exportar_button.grid(row=3, column=6, padx=(40, 0), sticky="ew")
+        self.exportar_button.grid(row=3, column=6, padx=10, sticky="ew")
         
         
         #BOTONES FRAME INFERIOR
@@ -354,3 +368,91 @@ class LibroApp:
         self.cerrar_button = ctk.CTkButton(self.popup_detalle, text="Cerrar", command=self.popup_detalle.destroy, border_width=2, fg_color="#1C2124", text_color="white", font=("Helvetica", 12, "bold"), hover_color="#F3920F", border_color="#F3920F")
         self.cerrar_button.grid(row=2, column=0, columnspan=3, pady=10)
 
+
+
+    #REPORTES
+
+    def obtener_ruta_escritorio(self):
+        """Obtiene la ruta del escritorio del usuario."""
+        return os.path.join(os.path.expanduser("~"), "Desktop")
+
+    def obtener_nombre_disponible(self, nombre_base):
+        """Genera un nombre de archivo único en la carpeta 'Reportes' del escritorio."""
+        escritorio = self.obtener_ruta_escritorio()
+        directorio = os.path.join(escritorio, "Reportes")
+
+        # Crear la carpeta si no existe
+        if not os.path.exists(directorio):
+            os.makedirs(directorio)
+
+        contador = 1
+        nombre_archivo = os.path.join(directorio, f"{nombre_base}.pdf")
+
+        while os.path.exists(nombre_archivo):
+            nombre_archivo = os.path.join(directorio, f"{nombre_base}_{contador}.pdf")
+            contador += 1
+
+        return nombre_archivo
+
+    def exportar_ventas_pandas_pdf(self, ventas):
+        """Exporta las ventas a un archivo PDF en formato de tabla."""
+        if not ventas:
+            self.error_label.configure(text="No hay ventas para exportar", text_color="#FF0000")
+            return
+
+        nombre_base = self.exportar_entry.get().strip() or "Reporte"
+
+        # Convertir ventas a DataFrame de pandas
+        df = pd.DataFrame([{
+            "ID": venta[0],
+            "Fecha": venta[1],
+            "Total Venta": venta[2],
+            "Ganancia de la Venta": venta[3],
+            "Vendedor": venta[4]
+        } for venta in ventas])
+
+        # Obtener un nombre de archivo único
+        nombre_archivo = self.obtener_nombre_disponible(nombre_base)
+
+        # Crear documento PDF
+        doc = SimpleDocTemplate(nombre_archivo, pagesize=letter)
+        elementos = []
+
+        # **Crear la tabla**
+        data = [df.columns.tolist()] + df.values.tolist()  # Encabezado + datos
+        tabla = Table(data)
+
+        # **Estilo de la tabla**
+        estilo = TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.orange),  # Fondo de encabezado
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),   # Texto blanco en encabezado
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),  # Centrar texto
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),  # Bordes negros
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),  # Fuente en encabezado
+            ("FONTSIZE", (0, 0), (-1, -1), 12),  # Tamaño de letra más grande
+            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),  # Fondo de celdas
+            ("BOTTOMPADDING", (0, 0), (-1, 0), 10),  # Espaciado en encabezado
+            ("TOPPADDING", (0, 0), (-1, -1), 5),  # Espaciado entre filas
+        ])
+        tabla.setStyle(estilo)
+
+        elementos.append(tabla)
+        # **Obtener los valores de facturación y ganancia desde los labels**
+        total_vendido = self.total_vendido_label.cget("text").replace("Venta Total: $", "").strip()
+        total_ganancia = self.total_ganancias_label.cget("text").replace("Ganancia Total: $", "").strip()
+
+        # **Agregar un espacio antes de los totales**
+        elementos.append(Spacer(1, 12))
+
+        # **Crear el resumen de totales**
+        estilo_texto = ParagraphStyle(name="Normal", fontSize=14, textColor=colors.black)
+
+        texto_facturacion = Paragraph(f"<b>Venta Total:</b> ${total_vendido}", estilo_texto)
+        texto_ganancia = Paragraph(f"<b>Ganancia Total:</b> ${total_ganancia}", estilo_texto)
+
+        elementos.append(texto_facturacion)
+        elementos.append(texto_ganancia)        
+
+        doc.build(elementos)
+
+        self.error_label.configure(text=f"Reporte generado en: {nombre_archivo}", text_color="#00FF00")
