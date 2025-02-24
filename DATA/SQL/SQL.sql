@@ -1,8 +1,10 @@
--- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+CREATE DATABASE  IF NOT EXISTS `db_almacen` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `db_almacen`;
+-- MySQL dump 10.13  Distrib 8.0.22, for Win64 (x86_64)
 --
 -- Host: localhost    Database: db_almacen
 -- ------------------------------------------------------
--- Server version	8.0.40
+-- Server version	8.0.39
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -27,18 +29,8 @@ CREATE TABLE `categoria` (
   `nombre` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
   `descripcion` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin DEFAULT NULL,
   PRIMARY KEY (`categoriaID`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `categoria`
---
-
-LOCK TABLES `categoria` WRITE;
-/*!40000 ALTER TABLE `categoria` DISABLE KEYS */;
-INSERT INTO `categoria` VALUES (1,'Bebidas',NULL),(2,'Almacennnn',NULL),(3,'Cigarrillos',NULL),(4,'Lacteos',NULL),(5,'Helados',NULL);
-/*!40000 ALTER TABLE `categoria` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `detalle`
@@ -51,7 +43,7 @@ CREATE TABLE `detalle` (
   `productoID` int NOT NULL,
   `ventaID` int NOT NULL,
   `cantidad` int NOT NULL,
-  `total_prod` decimal(8,2) NOT NULL,
+  `total_prod` int NOT NULL,
   PRIMARY KEY (`productoID`,`ventaID`),
   KEY `fk_Producto_has_Venta_Venta1_idx` (`ventaID`),
   KEY `fk_Producto_has_Venta_Producto1_idx` (`productoID`),
@@ -59,15 +51,6 @@ CREATE TABLE `detalle` (
   CONSTRAINT `fk_Producto_has_Venta_Venta1` FOREIGN KEY (`ventaID`) REFERENCES `venta` (`ventaID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `detalle`
---
-
-LOCK TABLES `detalle` WRITE;
-/*!40000 ALTER TABLE `detalle` DISABLE KEYS */;
-/*!40000 ALTER TABLE `detalle` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `producto`
@@ -79,26 +62,17 @@ DROP TABLE IF EXISTS `producto`;
 CREATE TABLE `producto` (
   `productoID` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
-  `precio` decimal(8,2) NOT NULL,
+  `precio` int NOT NULL,
   `stock` int NOT NULL,
-  `costo` decimal(8,2) NOT NULL,
+  `costo` int NOT NULL,
+  `ganancia_acumulada` int NOT NULL,
   `codigo_barra` varchar(13) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin DEFAULT NULL,
   `categoriaID` int NOT NULL,
   PRIMARY KEY (`productoID`),
   KEY `fk_Producto_Categoria_idx` (`categoriaID`),
   CONSTRAINT `fk_Producto_Categoria` FOREIGN KEY (`categoriaID`) REFERENCES `categoria` (`categoriaID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `producto`
---
-
-LOCK TABLES `producto` WRITE;
-/*!40000 ALTER TABLE `producto` DISABLE KEYS */;
-INSERT INTO `producto` VALUES (3,'Philips de 10',2800.00,10,2000.00,'1234509871234',3);
-/*!40000 ALTER TABLE `producto` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `vendedor`
@@ -112,18 +86,8 @@ CREATE TABLE `vendedor` (
   `usuario` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
   `contrasena` int NOT NULL,
   PRIMARY KEY (`vendedorID`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `vendedor`
---
-
-LOCK TABLES `vendedor` WRITE;
-/*!40000 ALTER TABLE `vendedor` DISABLE KEYS */;
-INSERT INTO `vendedor` VALUES (2,'Leo',1234),(4,'Victor',1234),(5,'admin',1234);
-/*!40000 ALTER TABLE `vendedor` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `venta`
@@ -135,26 +99,15 @@ DROP TABLE IF EXISTS `venta`;
 CREATE TABLE `venta` (
   `ventaID` int NOT NULL AUTO_INCREMENT,
   `fecha` date NOT NULL,
-  `total_ventas` decimal(8,2) NOT NULL,
-  `Vendedor_vendedorID` int NOT NULL,
-  PRIMARY KEY (`ventaID`,`Vendedor_vendedorID`),
-  KEY `fk_Venta_Vendedor1_idx` (`Vendedor_vendedorID`),
-  CONSTRAINT `fk_Venta_Vendedor1` FOREIGN KEY (`Vendedor_vendedorID`) REFERENCES `vendedor` (`vendedorID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
+  `total_venta` int NOT NULL,
+  `ganancia_total` int NOT NULL,
+  `vendedorID` int DEFAULT NULL,
+  `nombre_vendedor` varchar(45) COLLATE utf8mb3_bin NOT NULL,
+  PRIMARY KEY (`ventaID`),
+  KEY `fk_Venta_Vendedor1` (`vendedorID`),
+  CONSTRAINT `fk_Venta_Vendedor1` FOREIGN KEY (`vendedorID`) REFERENCES `vendedor` (`vendedorID`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `venta`
---
-
-LOCK TABLES `venta` WRITE;
-/*!40000 ALTER TABLE `venta` DISABLE KEYS */;
-/*!40000 ALTER TABLE `venta` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping events for database 'db_almacen'
---
 
 --
 -- Dumping routines for database 'db_almacen'
@@ -169,4 +122,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-01-23 19:49:00
+-- Dump completed on 2025-02-23 23:29:49
