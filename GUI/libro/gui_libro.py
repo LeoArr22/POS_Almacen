@@ -166,15 +166,30 @@ class LibroApp:
         
         #BOTONES FRAME INFERIOR
         #Totales
-        self.total_vendido_label = ctk.CTkLabel(self.botones_frame_inferior, text="Venta Total: $0", fg_color="#1C2124", font=("Helvetica", 25, "bold"), text_color="#F3920F")
+        self.total_vendido_label = ctk.CTkLabel(self.botones_frame_inferior, text="Venta Total: $0", 
+                                                fg_color="#1C2124", 
+                                                font=("Helvetica", 25, "bold"), 
+                                                text_color="#F3920F")
         self.total_vendido_label.grid(row=0, column=0, padx=10, sticky="w")
 
-        self.total_ganancias_label = ctk.CTkLabel(self.botones_frame_inferior, text="Ganancia Total: $0", fg_color="#1C2124", font=("Helvetica", 25, "bold"), text_color="#F3920F")
+        self.total_ganancias_label = ctk.CTkLabel(self.botones_frame_inferior, text="Ganancia Total: $0", fg_color="#1C2124", 
+                                                  font=("Helvetica", 25, "bold"), 
+                                                  text_color="#F3920F")
         self.total_ganancias_label.grid(row=1, column=0, padx=10, sticky="w")
 
        # Columna vacía para separación
         self.empty_label = ctk.CTkLabel(self.botones_frame_inferior, text="", fg_color="#1C2124")
         self.empty_label.grid(row=0, column=1, rowspan=2, sticky="w")
+        
+        # Numero de pagina
+        self.pagina_label = ctk.CTkLabel(self.botones_frame_inferior, text=f"Pagina numero: {self.current_page + 1}",
+                                         fg_color="#1C2124",
+                                         font=("Helvetica", 15, "bold"), 
+                                         text_color="#F3920F")
+        self.pagina_label.grid(row=0, column=2, padx=10, sticky="w")
+        
+        
+        
         # Botones de navegación
         self.prev_button = ctk.CTkButton(self.botones_frame_inferior, text="🢀", 
                                         command=self.prev_page, 
@@ -221,6 +236,7 @@ class LibroApp:
         self.update_treeview()
         self.actualizar_totales(total_vendido, total_ganancia)
         self.error_label.configure(text="", text_color="#FF0000")
+
         return self.datos
 
     def update_treeview(self):
@@ -235,6 +251,9 @@ class LibroApp:
         for index, dato in enumerate(page_data):
             tag = "evenrow" if index % 2 == 0 else "oddrow"
             self.tree.insert("", "end", values=dato, tags=(tag,))
+            
+        self.pagina_label.configure(text=f"Página {self.current_page + 1}")
+    
 
     def next_page(self):
         if (self.current_page + 1) * self.page_size < len(self.datos):
